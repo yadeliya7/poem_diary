@@ -236,12 +236,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Common decoration
                 final decoration = BoxDecoration(
                   color: isDarkMode
-                      ? AppTheme.darkAccent.withOpacity(0.1)
+                      ? AppTheme.darkAccent.withValues(alpha: 0.1)
                       : AppTheme.lightAccent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                     color: isDarkMode
-                        ? AppTheme.darkAccent.withOpacity(0.3)
+                        ? AppTheme.darkAccent.withValues(alpha: 0.3)
                         : AppTheme.lightAccent.withValues(alpha: 0.3),
                   ),
                 );
