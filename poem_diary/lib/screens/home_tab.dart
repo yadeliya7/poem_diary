@@ -2,194 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/providers.dart';
-import '../models/poem_model.dart';
+import '../core/language_provider.dart';
 import 'all_moods_screen.dart';
 import '../widgets/premium_poem_card.dart';
 import 'settings_screen.dart';
-// We should probably move the dialog/sheet logic to a mixin or utility,
-// OR just invoke it from here if possible.
-
-// We need to implement the check-in logic here in HomeTab.
-// I will copy/adapt the check-in UI logic to here or standardizing it.
-// The user said: "Widget: The Horizontal Mood Selector (reused from entry sheet)."
+import '../widgets/mood_entry_dialog.dart';
 
 class HomeTab extends StatefulWidget {
-  const HomeTab({Key? key}) : super(key: key);
+  const HomeTab({super.key});
 
   @override
   State<HomeTab> createState() => _HomeTabState();
 }
 
 class _HomeTabState extends State<HomeTab> {
-  // Logic to show the entry dialog
-  void _showEntryDialog(
-    BuildContext context,
-    MoodCategory mood,
-    MoodProvider provider,
-  ) {
-    final noteController = TextEditingController();
-    final moodNotifier = ValueNotifier<MoodCategory>(mood);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.85,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (context, scrollController) {
-          return Container(
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(30),
-              ),
-            ),
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0,
-                    vertical: 16.0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      Text(
-                        "Bugün",
-                        style: GoogleFonts.nunito(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          if (moodNotifier.value.code.isNotEmpty) {
-                            provider.saveDailyEntry(
-                              DateTime.now(),
-                              moodNotifier.value.code,
-                              noteController.text,
-                            );
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(
-                          "KAYDET",
-                          style: GoogleFonts.nunito(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: isDark ? Colors.white70 : Colors.black87,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // Mood Selector
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: provider.moods
-                          .where((m) => m.code.isNotEmpty)
-                          .map((m) {
-                            return ValueListenableBuilder<MoodCategory>(
-                              valueListenable: moodNotifier,
-                              builder: (context, selectedMood, child) {
-                                final isSelected = selectedMood.code == m.code;
-                                return GestureDetector(
-                                  onTap: () => moodNotifier.value = m,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0,
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: isSelected
-                                                ? Colors.blueAccent.withOpacity(
-                                                    0.1,
-                                                  )
-                                                : Colors.transparent,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: isSelected
-                                                  ? Colors.blueAccent
-                                                  : Colors.grey.withOpacity(
-                                                      0.3,
-                                                    ),
-                                              width: isSelected ? 2.0 : 1.0,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            m.emoji,
-                                            style: TextStyle(
-                                              fontSize: isSelected ? 28 : 24,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          m.name,
-                                          style: GoogleFonts.nunito(
-                                            fontSize: 10,
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          })
-                          .toList(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: TextField(
-                      controller: noteController,
-                      expands: true,
-                      maxLines: null,
-                      decoration: const InputDecoration(
-                        hintText: "Neler hissediyorsun?",
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
+  // Removed local _showEntryDialog in favor of shared MoodEntryDialog
 
   String _getGreeting() {
+    final lang = Provider.of<LanguageProvider>(context, listen: false);
     final hour = DateTime.now().hour;
-    if (hour < 6) return 'İyi Geceler 🌙';
-    if (hour < 12) return 'Günaydın ☀️';
-    if (hour < 18) return 'İyi Günler 🌤️';
-    return 'İyi Akşamlar 🌙';
+    if (hour < 6) return lang.translate('good_night');
+    if (hour < 12) return lang.translate('good_morning');
+    if (hour < 18) return lang.translate('good_afternoon');
+    return lang.translate('good_evening');
   }
 
   @override
@@ -198,6 +33,10 @@ class _HomeTabState extends State<HomeTab> {
     final moodProvider = Provider.of<MoodProvider>(context);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Check for today's entry to highlight active mood and show attachment
+    final today = DateTime.now();
+    final todayEntry = moodProvider.getEntryForDate(today);
 
     // Get daily poem or random for now
     final dailyPoem = poemProvider.featuredPoem;
@@ -221,7 +60,7 @@ class _HomeTabState extends State<HomeTab> {
               children: [
                 // Large App Title
                 Text(
-                  "Şiir Günlüğü",
+                  Provider.of<LanguageProvider>(context).translate('app_title'),
                   style: GoogleFonts.nunito(
                     fontSize: 34,
                     fontWeight: FontWeight.bold,
@@ -241,7 +80,9 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Bugün şiir gibi bir gün olsun.",
+                  Provider.of<LanguageProvider>(
+                    context,
+                  ).translate('daily_quote'),
                   style: GoogleFonts.nunito(
                     fontSize: 16,
                     color: isDark ? Colors.white54 : Colors.black45,
@@ -250,7 +91,7 @@ class _HomeTabState extends State<HomeTab> {
 
                 const SizedBox(height: 30),
 
-                // 2. Mood Check-in Section (Restored)
+                // 2. Mood Check-in Section
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -258,7 +99,7 @@ class _HomeTabState extends State<HomeTab> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -269,7 +110,9 @@ class _HomeTabState extends State<HomeTab> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Bugün nasıl hissediyorsun?",
+                          Provider.of<LanguageProvider>(
+                            context,
+                          ).translate('check_in_prompt'),
                           style: GoogleFonts.nunito(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -284,45 +127,106 @@ class _HomeTabState extends State<HomeTab> {
                           children: moodProvider.moods
                               .where((m) => m.code.isNotEmpty)
                               .map((mood) {
+                                final isTodayMood =
+                                    todayEntry?.moodCode == mood.code;
+                                final hasMedia =
+                                    isTodayMood &&
+                                    (todayEntry?.mediaPaths.isNotEmpty ??
+                                        false);
+
                                 return GestureDetector(
                                   onTap: () {
-                                    _showEntryDialog(
+                                    showMoodEntryDialog(
                                       context,
-                                      mood,
-                                      moodProvider,
+                                      date: today,
+                                      provider: moodProvider,
+                                      currentMood: mood.code,
+                                      currentNote: todayEntry?.note,
+                                      currentMedia:
+                                          todayEntry?.mediaPaths ?? [],
                                     );
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.only(right: 16.0),
                                     child: Column(
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.grey.withOpacity(
-                                                0.3,
+                                        Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: isTodayMood
+                                                    ? Colors.blueAccent
+                                                          .withValues(
+                                                            alpha: 0.1,
+                                                          )
+                                                    : Colors.transparent,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: isTodayMood
+                                                      ? Colors.blueAccent
+                                                      : Colors.grey.withValues(
+                                                          alpha: 0.3,
+                                                        ),
+                                                  width: isTodayMood
+                                                      ? 2.0
+                                                      : 1.0,
+                                                ),
                                               ),
-                                              width: 1.0,
+                                              child: Text(
+                                                mood.emoji,
+                                                style: const TextStyle(
+                                                  fontSize: 24,
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                          child: Text(
-                                            mood.emoji,
-                                            style: const TextStyle(
-                                              fontSize: 24,
-                                            ),
-                                          ),
+                                            if (hasMedia)
+                                              Positioned(
+                                                right: -4,
+                                                bottom: -4,
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(
+                                                    4,
+                                                  ),
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        color: Colors.white,
+                                                        shape: BoxShape.circle,
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                            color:
+                                                                Colors.black26,
+                                                            blurRadius: 4,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                  child: Icon(
+                                                    Icons.attach_file,
+                                                    size: 12,
+                                                    color: Colors.blueAccent,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          mood.name,
+                                          Provider.of<LanguageProvider>(
+                                            context,
+                                          ).translate('mood_${mood.code}'),
                                           style: GoogleFonts.nunito(
                                             fontSize: 12,
-                                            color: isDark
-                                                ? Colors.white70
-                                                : Colors.black54,
+                                            fontWeight: isTodayMood
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                            color: isTodayMood
+                                                ? (isDark
+                                                      ? Colors.white
+                                                      : Colors.black87)
+                                                : (isDark
+                                                      ? Colors.white70
+                                                      : Colors.black54),
                                           ),
                                         ),
                                       ],
@@ -341,7 +245,9 @@ class _HomeTabState extends State<HomeTab> {
 
                 // 3. Daily Content (Today's Poem)
                 Text(
-                  "Günün Şiiri",
+                  Provider.of<LanguageProvider>(
+                    context,
+                  ).translate('poem_of_day'),
                   style: const TextStyle(
                     fontFamily: 'Nunito',
                     fontSize: 22,
@@ -366,14 +272,18 @@ class _HomeTabState extends State<HomeTab> {
                       color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Center(
-                      child: Text("Henüz bir şiir seçilmedi."),
+                    child: Center(
+                      child: Text(
+                        Provider.of<LanguageProvider>(
+                          context,
+                        ).translate('msg_no_poem_selected'),
+                      ),
                     ),
                   ),
 
                 const SizedBox(height: 30),
 
-                // 4. Discovery Banner (Moved Bottom)
+                // 4. Discovery Banner
                 InkWell(
                   onTap: () {
                     Navigator.push(
@@ -395,7 +305,7 @@ class _HomeTabState extends State<HomeTab> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF6A11CB).withOpacity(0.3),
+                          color: const Color(0xFF6A11CB).withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -414,7 +324,9 @@ class _HomeTabState extends State<HomeTab> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Ruh Haline Göre Keşfet",
+                                Provider.of<LanguageProvider>(
+                                  context,
+                                ).translate('discover_title'),
                                 style: GoogleFonts.nunito(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -423,7 +335,9 @@ class _HomeTabState extends State<HomeTab> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Modunu seç, şiirini bul...",
+                                Provider.of<LanguageProvider>(
+                                  context,
+                                ).translate('discover_subtitle'),
                                 style: GoogleFonts.nunito(
                                   fontSize: 14,
                                   color: Colors.white70,

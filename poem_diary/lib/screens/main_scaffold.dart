@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-import 'package:google_nav_bar/google_nav_bar.dart';
-
 import 'home_tab.dart';
 import 'mood_calendar_screen.dart';
 import 'library_screen.dart';
 import 'compose_poem_screen.dart';
 
 class MainScaffold extends StatefulWidget {
-  const MainScaffold({Key? key}) : super(key: key);
+  const MainScaffold({super.key});
 
   @override
   State<MainScaffold> createState() => _MainScaffoldState();
@@ -30,52 +28,49 @@ class _MainScaffoldState extends State<MainScaffold> {
     });
   }
 
+  Widget _buildNavItem(IconData icon, int index) {
+    bool isSelected = _selectedIndex == index;
+    return IconButton(
+      icon: Icon(
+        icon,
+        color: isSelected ? Colors.white : Colors.white54,
+        size: 28,
+      ),
+      onPressed: () => _onItemTapped(index),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       extendBody: true, // For transparent nav bar effect if needed
       body: IndexedStack(index: _selectedIndex, children: _widgetOptions),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
-        ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 25),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              color: isDark
-                  ? Colors.black.withOpacity(0.6)
-                  : Colors.white.withOpacity(0.7),
-              child: Padding(
-                padding: const EdgeInsets.all(
-                  10,
-                ), // Internal padding for the glass container
-                child: GNav(
-                  gap: 0,
-                  activeColor: isDark ? Colors.white : Colors.black,
-                  color: Colors.grey,
-                  tabBackgroundColor: isDark
-                      ? Colors.white.withOpacity(0.1)
-                      : Colors.black.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
+              height: 65,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
                   ),
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeOutExpo,
-                  selectedIndex: _selectedIndex,
-                  onTabChange: _onItemTapped,
-                  tabs: const [
-                    GButton(icon: Icons.bookmarks, text: ''),
-                    GButton(icon: Icons.home_filled, text: ''),
-                    GButton(icon: Icons.calendar_month, text: ''),
-                  ],
-                ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNavItem(Icons.bookmarks, 0),
+                  _buildNavItem(Icons.home_filled, 1),
+                  _buildNavItem(Icons.calendar_month, 2),
+                ],
               ),
             ),
           ),
@@ -98,9 +93,9 @@ class _MainScaffoldState extends State<MainScaffold> {
             ),
           );
         },
-        backgroundColor: Colors.orangeAccent, // distinct accent
+        backgroundColor: Colors.orangeAccent,
+        elevation: 4, // distinct accent
         child: const Icon(Icons.edit, color: Colors.white),
-        elevation: 4,
       ),
       // Depending on layout, we might want centerDocked, but simpler is safer first.
       // If we used a notched shape, we'd need BottomAppBar.

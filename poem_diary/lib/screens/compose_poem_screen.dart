@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../core/providers.dart';
+import '../core/language_provider.dart';
 import '../models/poem_model.dart';
 
 class ComposePoemScreen extends StatefulWidget {
-  const ComposePoemScreen({Key? key}) : super(key: key);
+  const ComposePoemScreen({super.key});
 
   @override
   State<ComposePoemScreen> createState() => _ComposePoemScreenState();
@@ -16,6 +19,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _authorController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  final List<String> _selectedMedia = []; // Store selected media paths
 
   @override
   void dispose() {
@@ -23,6 +27,100 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
     _authorController.dispose();
     _contentController.dispose();
     super.dispose();
+  }
+
+  // --- Media Picking Logic ---
+  Future<void> _pickImage() async {
+    try {
+      final picker = ImagePicker();
+      final List<XFile> images = await picker.pickMultiImage();
+      if (!mounted) return;
+      if (images.isNotEmpty) {
+        setState(() {
+          _selectedMedia.addAll(images.map((img) => img.path));
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking images: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Resim seçilirken hata oluştu')));
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    try {
+      final picker = ImagePicker();
+      final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+      if (!mounted) return;
+      if (video != null) {
+        setState(() {
+          _selectedMedia.add(video.path);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error picking video: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Video seçilirken hata oluştu')));
+    }
+  }
+
+  void _removeMedia(int index) {
+    setState(() {
+      _selectedMedia.removeAt(index);
+    });
+  }
+
+  // --- Thumbnail Builder (Local Safe Version) ---
+  Widget _buildMediaThumbnail(String path) {
+    final ext = path.split('.').last.toLowerCase();
+    final isVideo = ['mp4', 'mov', 'avi', 'mkv'].contains(ext);
+    final isImage = ['jpg', 'jpeg', 'png', 'heic', 'webp'].contains(ext);
+
+    if (isVideo) {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            color: Colors.black87,
+            child: const Center(
+              child: Icon(Icons.videocam, color: Colors.white54, size: 32),
+            ),
+          ),
+          const Icon(Icons.play_circle_fill, color: Colors.white, size: 32),
+        ],
+      );
+    } else if (isImage) {
+      return Image.file(
+        File(path),
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Container(
+          color: Colors.grey[800],
+          child: const Icon(Icons.broken_image, color: Colors.white54),
+        ),
+      );
+    } else {
+      // Fallback for other files (PDF, Audio, etc.)
+      return Container(
+        color: Colors.grey[800],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.insert_drive_file, color: Colors.white54),
+            const SizedBox(height: 4),
+            Text(
+              ext.toUpperCase(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void _savePoem() {
@@ -49,8 +147,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
           : _authorController.text.trim(),
       mood: 'happy', // Default mood
       createdAt: DateTime.now(),
-      // Default background will be empty, or we can assign a random one?
-      // Use clean style by default or allow user to pick later.
+      mediaPaths: _selectedMedia, // Save selected media
     );
 
     Provider.of<PoemProvider>(context, listen: false).addUserPoem(newPoem);
@@ -104,7 +201,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                 ),
               ),
               child: Text(
-                'KAYDET',
+                Provider.of<LanguageProvider>(context).translate('save'),
                 style: GoogleFonts.nunito(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -140,10 +237,12 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                   ),
                   cursorColor: Colors.white,
                   decoration: InputDecoration(
-                    hintText: 'Başlık...',
+                    hintText: Provider.of<LanguageProvider>(
+                      context,
+                    ).translate('title_placeholder'),
                     hintStyle: TextStyle(
                       fontFamily: fontName,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
@@ -152,6 +251,8 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+
+                // Author Input
                 TextField(
                   controller: _authorController,
                   style: TextStyle(
@@ -162,10 +263,12 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                   ),
                   cursorColor: Colors.white,
                   decoration: InputDecoration(
-                    hintText: 'Şair / Mahlas',
+                    hintText: Provider.of<LanguageProvider>(
+                      context,
+                    ).translate('poet_placeholder'),
                     hintStyle: TextStyle(
                       fontFamily: fontName,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 18,
                       fontStyle: FontStyle.italic,
                     ),
@@ -173,7 +276,101 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
+
                 const SizedBox(height: 10),
+
+                // --- Media Toolbar ---
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Icons.image, size: 18),
+                      label: Text(
+                        Provider.of<LanguageProvider>(
+                          context,
+                        ).translate('add_photo'),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.2),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: _pickVideo,
+                      icon: const Icon(Icons.videocam, size: 18),
+                      label: Text(
+                        Provider.of<LanguageProvider>(
+                          context,
+                        ).translate('add_video'),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.2),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // --- Media Preview Area ---
+                if (_selectedMedia.isNotEmpty)
+                  Container(
+                    height: 90,
+                    margin: const EdgeInsets.only(top: 10),
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _selectedMedia.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: SizedBox(
+                                  width: 90,
+                                  height: 90,
+                                  child: _buildMediaThumbnail(
+                                    _selectedMedia[index],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 4,
+                                right: 4,
+                                child: GestureDetector(
+                                  onTap: () => _removeMedia(index),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.black54,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                const SizedBox(height: 10),
+
                 // Content Input
                 Expanded(
                   child: TextField(
@@ -190,7 +387,9 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                     ),
                     cursorColor: Colors.white,
                     decoration: InputDecoration(
-                      hintText: 'İçindekileri dök...',
+                      hintText: Provider.of<LanguageProvider>(
+                        context,
+                      ).translate('hint_poem_body'),
                       hintStyle: TextStyle(
                         fontFamily: fontName,
                         color: Colors.white.withOpacity(0.6),

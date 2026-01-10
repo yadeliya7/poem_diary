@@ -7,7 +7,7 @@ import '../widgets/premium_poem_card.dart';
 class PoemDetailScreen extends StatelessWidget {
   final Poem poem;
 
-  const PoemDetailScreen({Key? key, required this.poem}) : super(key: key);
+  const PoemDetailScreen({super.key, required this.poem});
 
   @override
   Widget build(BuildContext context) {

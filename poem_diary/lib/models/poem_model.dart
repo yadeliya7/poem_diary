@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Poem {
   final String id;
   final String title;
@@ -9,6 +11,7 @@ class Poem {
   backgroundImage; // New field for sequential background assignment
   final String? gradientId;
   final bool isFavorite;
+  final List<String> mediaPaths;
 
   Poem({
     required this.id,
@@ -20,6 +23,7 @@ class Poem {
     this.backgroundImage = '', // Default to empty, will be assigned by Provider
     this.gradientId,
     this.isFavorite = false,
+    this.mediaPaths = const [],
   });
 
   // Favori durumunu güncellemek için kopya oluşturma metodu
@@ -33,6 +37,8 @@ class Poem {
     String? backgroundImage,
     String? gradientId,
     bool? isFavorite,
+    bool clearGradient = false, // Added to allow clearing gradient
+    List<String>? mediaPaths,
   }) {
     return Poem(
       id: id ?? this.id,
@@ -42,8 +48,9 @@ class Poem {
       mood: mood ?? this.mood,
       createdAt: createdAt ?? this.createdAt,
       backgroundImage: backgroundImage ?? this.backgroundImage,
-      gradientId: gradientId ?? this.gradientId,
+      gradientId: clearGradient ? null : (gradientId ?? this.gradientId),
       isFavorite: isFavorite ?? this.isFavorite,
+      mediaPaths: mediaPaths ?? this.mediaPaths,
     );
   }
 
@@ -59,6 +66,11 @@ class Poem {
       gradientId: json['gradientId'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       isFavorite: json['isFavorite'] as bool? ?? false,
+      mediaPaths:
+          (json['mediaPaths'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -73,6 +85,7 @@ class Poem {
       'gradientId': gradientId,
       'createdAt': createdAt.toIso8601String(),
       'isFavorite': isFavorite,
+      'mediaPaths': mediaPaths,
     };
   }
 }
@@ -84,6 +97,7 @@ class MoodCategory {
   final String emoji;
   final String description;
   final String backgroundGradient; // 'sad', 'happy' vb. referans
+  final Color color; // New field for mood color
 
   MoodCategory({
     required this.id,
@@ -92,5 +106,6 @@ class MoodCategory {
     required this.emoji,
     required this.description,
     required this.backgroundGradient,
+    required this.color,
   });
 }

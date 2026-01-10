@@ -9,13 +9,13 @@ class AuroraButton extends StatefulWidget {
   final List<Color>? gradientColors;
 
   const AuroraButton({
-    Key? key,
+    super.key,
     this.label, // Optional
     required this.icon,
     required this.onPressed,
     this.isPrimary = true,
     this.gradientColors,
-  }) : super(key: key);
+  });
 
   @override
   State<AuroraButton> createState() => _AuroraButtonState();
@@ -127,16 +127,21 @@ class _AuroraButtonState extends State<AuroraButton>
                     : null,
 
                 // Primary değilse (Glass/Outline)
-                color: widget.isPrimary ? null : Colors.grey.withOpacity(0.1),
+                color: widget.isPrimary
+                    ? null
+                    : Colors.grey.withValues(alpha: 0.1),
                 border: widget.isPrimary
                     ? null
-                    : Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+                    : Border.all(
+                        color: Colors.grey.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
 
                 // GÖLGE
                 boxShadow: widget.isPrimary
                     ? [
                         BoxShadow(
-                          color: activeColors[0].withOpacity(0.4),
+                          color: activeColors[0].withValues(alpha: 0.4),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),

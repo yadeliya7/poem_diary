@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -90,62 +91,53 @@ class PoemProvider extends ChangeNotifier {
   // Getter for the Weekly Feed (Home Screen)
   // Returns 7 poems: Today's poem + past 6 days
   List<Poem> get weeklyFeed {
-    if (_poems.isEmpty) return [];
-
-    final now = DateTime.now();
-    // Start date: 2026-01-01
-    final startDate = DateTime(2026, 1, 1);
-
-    // How many days have passed since 2026-01-01?
-    // +1 because ID 1 is Day 0 (start date)
-    final daysSinceStart = now.difference(startDate).inDays;
-
-    // Today's ID: If today is 2026-01-01 (0 days diff), ID should be 1.
-    // So ID = daysSinceStart + 1.
-    final todayId = daysSinceStart + 1;
-
     List<Poem> feed = [];
+    final now = DateTime.now();
+
     for (int i = 0; i < 7; i++) {
-      // We want to show poems for [Today, Yesterday, ... Today-6]
-      // The ID for "Today - i" is simply (todayId - i).
-
-      int targetId = todayId - i;
-
-      // Handle IDs < 1 (Before Start Date) or IDs that don't exist
-      // For now, let's wrap around if < 1 to show *something* or just clamp to 1?
-      // User said "it start from 01 01 2026 id:1". Logic implies before that there are no poems?
-      // If targetId < 1, let's just show Poem #1 or loop from the end.
-      // Let's safe-guard: modulo if ID > length, clamp if < 1.
-
-      // Actually, if we want strict ID mapping, we should try to find that specific ID.
-      // But we only have 20 poems generated so far.
-      // If today is 2026-01-08, ID=8. All good.
-      // If user sets date to 2027, ID=370? We don't have it.
-      // Fallback: Modulo logic for safety if ID > _poems.length
-
-      int effectiveIndex;
-      if (targetId <= 0) {
-        // Before 2026 -> Show cyclic
-        effectiveIndex =
-            (_poems.length + (targetId % _poems.length)) % _poems.length;
-      } else {
-        // Real ID mapping
-        // Index = ID - 1
-        effectiveIndex = (targetId - 1) % _poems.length;
-      }
-
-      final originalPoem = _poems[effectiveIndex];
-
-      // The display date is physically "Today - i"
-      feed.add(
-        originalPoem.copyWith(createdAt: now.subtract(Duration(days: i))),
-      );
+      final date = now.subtract(Duration(days: i));
+      feed.add(getDailyPoem(date));
     }
+    // Return closest to oldest order if that was the intent,
+    // BUT usually feed is shown chronologically or reverse chronologically.
+    // Previous code reversed it: [Oldest ... Today]
+    // Let's stick to that convention for compatibility.
     return feed.reversed.toList();
   }
 
-  // Getter for the Featured Daily Poem
-  Poem? get featuredPoem => weeklyFeed.isNotEmpty ? weeklyFeed.first : null;
+  // Deterministic Daily Poem Algorithm
+  Poem getDailyPoem(DateTime date) {
+    if (_poems.isEmpty) {
+      // Placeholder for empty state
+      return Poem(
+        id: 'placeholder',
+        title: 'Hoş Geldiniz',
+        content: 'Şiirler yükleniyor...\nLütfen bekleyiniz.',
+        author: 'Sistem',
+        mood: 'happy',
+        createdAt: date,
+        backgroundImage: 'assets/images/bg_1.jpg',
+      );
+    }
+
+    // 1. Generate Seed from Date (YYYYMMDD)
+    final int seed = date.year * 10000 + date.month * 100 + date.day;
+
+    // 2. Random with Seed
+    final Random rng = Random(seed);
+
+    // 3. Pick Index
+    final int index = rng.nextInt(_poems.length);
+    final originalPoem = _poems[index];
+
+    // 4. Return Copy with Date
+    // Note: We keep the original ID to allow favorites to work on the underlying poem.
+    // But distinct days showing the same poem might share favoriting status, which is expected.
+    return originalPoem.copyWith(createdAt: date);
+  }
+
+  // Getter for the Featured Daily Poem (Today)
+  Poem? get featuredPoem => getDailyPoem(DateTime.now());
 
   // User created poems
   final List<Poem> _userPoems = [];
@@ -202,7 +194,7 @@ class PoemProvider extends ChangeNotifier {
       if (index != -1) {
         _poems[index] = _poems[index].copyWith(
           backgroundImage: newImagePath,
-          gradientId: null, // Clear gradient
+          clearGradient: true, // Force clear gradient
         );
         notifyListeners();
         return;
@@ -213,7 +205,7 @@ class PoemProvider extends ChangeNotifier {
       if (userIndex != -1) {
         _userPoems[userIndex] = _userPoems[userIndex].copyWith(
           backgroundImage: newImagePath,
-          gradientId: null, // Clear gradient
+          clearGradient: true, // Force clear gradient
         );
         notifyListeners();
         return;
@@ -286,7 +278,7 @@ class PoemProvider extends ChangeNotifier {
 
 class MoodProvider extends ChangeNotifier {
   // Changed from Map<String, String> to Map<String, DailyEntry>
-  Map<String, DailyEntry> _journal = {};
+  final Map<String, DailyEntry> _journal = {};
 
   MoodProvider() {
     _loadJournal();
@@ -343,12 +335,18 @@ class MoodProvider extends ChangeNotifier {
   Future<void> saveDailyEntry(
     DateTime date,
     String moodCode,
-    String? note,
-  ) async {
+    String? note, [
+    List<String> mediaPaths = const [],
+  ]) async {
     final String dateKey =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
 
-    final entry = DailyEntry(moodCode: moodCode, note: note, date: date);
+    final entry = DailyEntry(
+      moodCode: moodCode,
+      note: note,
+      date: date,
+      mediaPaths: mediaPaths,
+    );
 
     _journal[dateKey] = entry;
     notifyListeners();
@@ -392,6 +390,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '📚',
       description: 'Bütün arşiv',
       backgroundGradient: 'mystic',
+      color: Colors.grey,
     ),
     MoodCategory(
       id: '1',
@@ -400,6 +399,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '🌧️',
       description: 'Yağmurlu bir gün hissiyatı',
       backgroundGradient: 'sad',
+      color: Colors.blueGrey,
     ),
     MoodCategory(
       id: '2',
@@ -408,6 +408,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '☀️',
       description: 'Güneşli bir sabah gibi',
       backgroundGradient: 'happy',
+      color: Colors.amber, // Yellow is too bright for text usually
     ),
     MoodCategory(
       id: '3',
@@ -416,6 +417,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '🍂',
       description: 'Anıların dokunuşu',
       backgroundGradient: 'nostalgic',
+      color: Colors.orangeAccent,
     ),
     MoodCategory(
       id: '4',
@@ -424,6 +426,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '🌙',
       description: 'Büyülü ve derin',
       backgroundGradient: 'mystic',
+      color: Colors.purple,
     ),
     MoodCategory(
       id: '5',
@@ -432,6 +435,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '🌅',
       description: 'Yeni bir başlangıç',
       backgroundGradient: 'hopeful',
+      color: Colors.green,
     ),
     MoodCategory(
       id: '6',
@@ -440,6 +444,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '🌊',
       description: 'Akıp giden su gibi',
       backgroundGradient: 'peaceful',
+      color: Colors.teal,
     ),
     MoodCategory(
       id: '7',
@@ -448,6 +453,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '💖',
       description: 'Aşkın en saf hali',
       backgroundGradient: 'romantic',
+      color: Colors.pinkAccent,
     ),
     MoodCategory(
       id: '8',
@@ -456,6 +462,7 @@ class MoodProvider extends ChangeNotifier {
       emoji: '☕',
       description: 'Biraz dinlenmeye ihtiyaç var',
       backgroundGradient: 'tired',
+      color: Colors.brown,
     ),
   ];
 

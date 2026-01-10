@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/providers.dart';
+import '../core/language_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +13,12 @@ class SettingsScreen extends StatelessWidget {
     final poemProvider = Provider.of<PoemProvider>(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Ayarlar",
+          languageProvider.translate('settings'),
           style: GoogleFonts.nunito(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
@@ -25,15 +28,32 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           SwitchListTile(
-            title: Text("Karanlık Mod", style: GoogleFonts.nunito()),
+            title: Text(
+              languageProvider.translate('dark_mode'),
+              style: GoogleFonts.nunito(),
+            ),
             value: themeProvider.isDarkMode,
-            activeColor: Colors.cyanAccent,
+            activeThumbColor: Colors.cyanAccent,
             onChanged: (value) {
               themeProvider.setDarkMode(value);
             },
           ),
           ListTile(
-            title: Text("Yazı Tipi", style: GoogleFonts.nunito()),
+            title: Text(
+              languageProvider.translate('language'),
+              style: GoogleFonts.nunito(),
+            ),
+            trailing: Switch(
+              value: languageProvider.currentLanguage == 'en',
+              activeThumbColor: Colors.cyanAccent,
+              onChanged: (val) => languageProvider.toggleLanguage(),
+            ),
+          ),
+          ListTile(
+            title: Text(
+              languageProvider.translate('setting_font_title'),
+              style: GoogleFonts.nunito(),
+            ), // Font name usually stays same
             trailing: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: poemProvider.contentFontFamily,

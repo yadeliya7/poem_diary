@@ -17,13 +17,13 @@ class ShareablePoemCard extends StatelessWidget {
   final String backgroundImage;
 
   const ShareablePoemCard({
-    Key? key,
+    super.key,
     required this.poem,
     required this.pageContent,
     required this.pageNumber,
     required this.totalPages,
     required this.backgroundImage,
-  }) : super(key: key);
+  });
 
   String _formatDate(DateTime date) {
     final months = [

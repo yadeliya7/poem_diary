@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/providers.dart';
+import '../core/language_provider.dart';
 import '../widgets/premium_poem_card.dart';
 
 class LibraryScreen extends StatelessWidget {
-  const LibraryScreen({Key? key}) : super(key: key);
+  const LibraryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final lang = Provider.of<LanguageProvider>(context);
 
     // Scaffold'ın DefaultTabController ile sarmalanması
     return DefaultTabController(
@@ -22,7 +24,7 @@ class LibraryScreen extends StatelessWidget {
           leading: null,
           automaticallyImplyLeading: false, // Root tab, no back button
           title: Text(
-            'Kütüphanem',
+            lang.translate('library'),
             style: GoogleFonts.nunito(
               color: isDarkMode ? Colors.white : Colors.black,
               fontWeight: FontWeight.bold,
@@ -35,9 +37,15 @@ class LibraryScreen extends StatelessWidget {
             unselectedLabelColor: Colors.grey,
             indicatorColor: isDarkMode ? Colors.white : Colors.black,
             labelStyle: GoogleFonts.nunito(fontWeight: FontWeight.bold),
-            tabs: const [
-              Tab(icon: Icon(Icons.favorite), text: 'Favorilerim'),
-              Tab(icon: Icon(Icons.edit_note), text: 'Yazdıklarım'),
+            tabs: [
+              Tab(
+                icon: Icon(Icons.favorite),
+                text: lang.translate('favorites'),
+              ),
+              Tab(
+                icon: Icon(Icons.edit_note),
+                text: lang.translate('my_poems'),
+              ),
             ],
           ),
         ),
@@ -51,16 +59,18 @@ class _FavoritesTab extends StatelessWidget {
   const _FavoritesTab();
 
   @override
+  @override
   Widget build(BuildContext context) {
     // Provider'ı burada dinliyoruz
     final poemProvider = Provider.of<PoemProvider>(context);
+    final lang = Provider.of<LanguageProvider>(context);
     final favorites = poemProvider.favoritePoems;
 
     if (favorites.isEmpty) {
       return _buildEmptyState(
         icon: Icons.favorite_border,
-        message: 'Henüz favori şiirin yok.',
-        subMessage: 'Beğendiğin şiirleri buraya ekleyebilirsin.',
+        message: lang.translate('empty_fav_title'),
+        subMessage: lang.translate('empty_fav_sub'),
       );
     }
 
@@ -89,16 +99,18 @@ class _UserPoemsTab extends StatelessWidget {
   const _UserPoemsTab();
 
   @override
+  @override
   Widget build(BuildContext context) {
     // Provider'ı burada dinliyoruz
     final poemProvider = Provider.of<PoemProvider>(context);
+    final lang = Provider.of<LanguageProvider>(context);
     final userPoems = poemProvider.userPoems;
 
     if (userPoems.isEmpty) {
       return _buildEmptyState(
         icon: Icons.rate_review_outlined,
-        message: 'Henüz bir şiir yazmadın.',
-        subMessage: 'Ana sayfadaki (+) ikonuna basarak ilk şiirini yaz!',
+        message: lang.translate('empty_poems_title'),
+        subMessage: lang.translate('empty_poems_sub'),
       );
     }
 
@@ -133,7 +145,7 @@ Widget _buildEmptyState({
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 80, color: Colors.grey.withOpacity(0.3)),
+        Icon(icon, size: 80, color: Colors.grey.withValues(alpha: 0.3)),
         const SizedBox(height: 20),
         Text(
           message,

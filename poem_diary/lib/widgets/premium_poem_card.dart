@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart'; // Titreşim için
 // import 'dart:ui'; // Unnecessary
@@ -12,11 +12,13 @@ import 'dart:io';
 import '../core/theme.dart';
 import '../core/premium_effects.dart';
 import '../core/providers.dart';
+import '../core/language_provider.dart';
 import '../models/poem_model.dart';
 import '../core/gradient_palette.dart';
 import '../utils/content_utils.dart';
 import 'shareable_poem_card.dart';
 import '../screens/poem_detail_screen.dart';
+import '../widgets/mood_entry_dialog.dart'; // For buildMediaThumbnail
 
 // UYGULAMADAKİ TÜM RESİMLERİN LİSTESİ
 const List<String> availableBackgrounds = [
@@ -37,14 +39,14 @@ class PremiumPoemCard extends StatefulWidget {
   final bool showFavoriteButton;
 
   const PremiumPoemCard({
-    Key? key,
+    super.key,
     required this.poem,
     required this.onTap,
     this.showUI = true,
     this.isCleanStyle = false,
     this.showExpandButton = true,
     this.showFavoriteButton = true,
-  }) : super(key: key);
+  });
 
   @override
   State<PremiumPoemCard> createState() => _PremiumPoemCardState();
@@ -113,7 +115,11 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
             children: [
               ListTile(
                 leading: const Icon(Icons.text_fields),
-                title: const Text('Metni Paylaş'),
+                title: Text(
+                  Provider.of<LanguageProvider>(
+                    context,
+                  ).translate('share_text'),
+                ),
                 onTap: () async {
                   Navigator.pop(ctx);
                   // ignore: deprecated_member_use
@@ -125,11 +131,15 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
               ),
               ListTile(
                 leading: const Icon(Icons.image),
-                title: const Text(
-                  'Resim Olarak Paylaş',
-                ), // "Uzun Resim" vurgusu kullanıcı isteği
-                subtitle: const Text(
-                  'Uzun şiirler için otomatik uzayan tasarım',
+                title: Text(
+                  Provider.of<LanguageProvider>(
+                    context,
+                  ).translate('share_image'),
+                ),
+                subtitle: Text(
+                  Provider.of<LanguageProvider>(
+                    context,
+                  ).translate('share_image_subtitle'),
                 ),
                 onTap: () async {
                   Navigator.pop(ctx);
@@ -159,6 +169,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
 
       // Generate an image for each page
       for (int i = 0; i < pages.length; i++) {
+        if (!context.mounted) return;
         final pageContent = pages[i];
         final pageNumber = i + 1;
         final totalPages = pages.length;
@@ -198,7 +209,11 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
       debugPrint('Paylaşım hatası: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Paylaşım oluşturulurken hata: $e')),
+          SnackBar(
+            content: Text(
+              '${Provider.of<LanguageProvider>(context, listen: false).translate('share_error')} $e',
+            ),
+          ),
         );
       }
     } finally {
@@ -298,6 +313,15 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                           Row(
                             children: [
                               /* Favorite button removed from header as per user request */
+                              if (widget.poem.mediaPaths.isNotEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 8.0),
+                                  child: Icon(
+                                    Icons.attach_file,
+                                    color: Colors.white70,
+                                    size: 20,
+                                  ),
+                                ),
                               if (widget.showExpandButton)
                                 GestureDetector(
                                   onTap: () {
@@ -375,6 +399,54 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                       ),
 
                       const SizedBox(height: 20),
+
+                      // --- Media Gallery ---
+                      if (widget.poem.mediaPaths.isNotEmpty)
+                        Container(
+                          height: 120,
+                          margin: const EdgeInsets.symmetric(vertical: 20),
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: widget.poem.mediaPaths.length,
+                            itemBuilder: (context, index) {
+                              final path = widget.poem.mediaPaths[index];
+                              final isImage = [
+                                'jpg',
+                                'jpeg',
+                                'png',
+                                'heic',
+                                'webp',
+                              ].contains(path.split('.').last.toLowerCase());
+
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (isImage) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => Dialog(
+                                          backgroundColor: Colors.transparent,
+                                          child: InteractiveViewer(
+                                            child: Image.file(File(path)),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      width: 120,
+                                      height: 120,
+                                      child: buildMediaThumbnail(path),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
 
                       // Footer Signature
                       Align(
@@ -518,14 +590,14 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
           return Container(
             decoration: BoxDecoration(
               color: isDark
-                  ? AppTheme.darkBackground.withOpacity(0.98)
-                  : AppTheme.lightBackground.withOpacity(0.98),
+                  ? AppTheme.darkBackground.withValues(alpha: 0.98)
+                  : AppTheme.lightBackground.withValues(alpha: 0.98),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(30),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),
@@ -545,7 +617,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                       width: 40,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.4),
+                        color: Colors.grey.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -553,7 +625,9 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
 
                     // Başlık ve TabBar
                     Text(
-                      'Arka Plan Seç',
+                      Provider.of<LanguageProvider>(
+                        context,
+                      ).translate('design_bg_title'),
                       style: GoogleFonts.nunito(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -574,9 +648,19 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                           : Theme.of(context).primaryColor,
                       indicatorSize: TabBarIndicatorSize.label,
                       dividerColor: Colors.transparent,
-                      tabs: const [
-                        Tab(text: 'Galeri', icon: Icon(Icons.image)),
-                        Tab(text: 'Renkler', icon: Icon(Icons.color_lens)),
+                      tabs: [
+                        Tab(
+                          text: Provider.of<LanguageProvider>(
+                            context,
+                          ).translate('tab_gallery'),
+                          icon: const Icon(Icons.image),
+                        ),
+                        Tab(
+                          text: Provider.of<LanguageProvider>(
+                            context,
+                          ).translate('tab_colors'),
+                          icon: const Icon(Icons.color_lens),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -638,8 +722,9 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                                           errorBuilder:
                                               (context, error, stackTrace) {
                                                 return Container(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.2),
+                                                  color: Colors.grey.withValues(
+                                                    alpha: 0.2,
+                                                  ),
                                                   child: const Center(
                                                     child: Icon(
                                                       Icons
@@ -699,7 +784,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                                         boxShadow: [
                                           BoxShadow(
                                             color: gradient.colors.first
-                                                .withOpacity(0.4),
+                                                .withValues(alpha: 0.4),
                                             blurRadius: 8,
                                             offset: const Offset(0, 4),
                                           ),
@@ -732,29 +817,15 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
   }
 
   String _formatDate(DateTime date) {
-    final months = [
-      'OCAK',
-      'ŞUBAT',
-      'MART',
-      'NİSAN',
-      'MAYIS',
-      'HAZİRAN',
-      'TEMMUZ',
-      'AĞUSTOS',
-      'EYLÜL',
-      'EKİM',
-      'KASIM',
-      'ARALIK',
-    ];
-    final weekdays = [
-      'PAZARTESİ',
-      'SALI',
-      'ÇARŞAMBA',
-      'PERŞEMBE',
-      'CUMA',
-      'CUMARTESİ',
-      'PAZAR',
-    ];
-    return '${date.day} ${months[date.month - 1]}, ${weekdays[date.weekday - 1]}';
+    try {
+      final langCode = Provider.of<LanguageProvider>(
+        context,
+        listen: false,
+      ).currentLanguage;
+      final locale = langCode == 'tr' ? 'tr_TR' : 'en_US';
+      return DateFormat('d MMMM yyyy, EEEE', locale).format(date).toUpperCase();
+    } catch (e) {
+      return '${date.day}.${date.month}.${date.year}';
+    }
   }
 }

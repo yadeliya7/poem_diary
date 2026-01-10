@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:provider/provider.dart';
 import '../models/poem_model.dart'; // To access MoodCategory if needed, though we might define local UI data
 import 'mood_results_screen.dart';
+import '../core/language_provider.dart';
 
 // Local data model for the screen
 class _MoodItem {
@@ -79,7 +81,7 @@ class AllMoodsScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Modunu Seç',
+          Provider.of<LanguageProvider>(context).translate('title_select_mood'),
           style: GoogleFonts.nunito(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -110,11 +112,15 @@ class AllMoodsScreen extends StatelessWidget {
               final category = MoodCategory(
                 id: mood.code,
                 code: mood.code,
-                name: mood.label,
+                name: Provider.of<LanguageProvider>(
+                  context,
+                  listen: false,
+                ).translate('mood_${mood.code}'),
                 emoji: '', // Icon is used instead
                 description: '',
                 backgroundGradient:
                     'mystic', // Fallback, not used for list filtering
+                color: mood.colors.first,
               );
               Navigator.push(
                 context,
@@ -133,7 +139,7 @@ class AllMoodsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: mood.colors.first.withOpacity(0.3),
+                    color: mood.colors.first.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 5),
                   ),
@@ -159,7 +165,9 @@ class AllMoodsScreen extends StatelessWidget {
                         Icon(mood.icon, color: Colors.white, size: 36),
                         const Spacer(),
                         Text(
-                          mood.label,
+                          Provider.of<LanguageProvider>(
+                            context,
+                          ).translate('mood_${mood.code}'),
                           style: GoogleFonts.nunito(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -170,7 +178,9 @@ class AllMoodsScreen extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              "Şiirleri Gör",
+                              Provider.of<LanguageProvider>(
+                                context,
+                              ).translate('btn_see_poems'),
                               style: GoogleFonts.nunito(
                                 fontSize: 12,
                                 color: Colors.white70,

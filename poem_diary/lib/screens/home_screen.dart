@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +5,7 @@ import 'package:flutter/services.dart'; // Titreşim için
 
 import '../core/theme.dart';
 import '../core/providers.dart';
+import '../core/language_provider.dart';
 
 import '../widgets/premium_poem_card.dart';
 import '../widgets/aurora_button.dart';
@@ -15,9 +14,10 @@ import 'all_moods_screen.dart';
 import 'mood_calendar_screen.dart';
 import 'compose_poem_screen.dart';
 import '../models/poem_model.dart';
+import '../widgets/mood_entry_dialog.dart'; // Unified Dialog
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -25,10 +25,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey _addPoemButtonKey = GlobalKey();
+
+  // Local methods _showNoteInput and _showMoodCheckIn removed in favor of MoodEntryDialog
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
     final poemProvider = Provider.of<PoemProvider>(context);
+    final lang = Provider.of<LanguageProvider>(context);
 
     // Tema renklerini al
     final accentColor = isDarkMode ? AppTheme.darkAccent : AppTheme.lightAccent;
@@ -223,66 +227,206 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // DAILY CHECK-IN (NEW)
+            // DAILY CHECK-IN (Unified Dialog Integration)
             Consumer<MoodProvider>(
               builder: (context, moodProvider, child) {
-                if (moodProvider.hasCheckedInToday()) {
-                  return const SizedBox.shrink();
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 0,
-                  ),
-                  child: GestureDetector(
-                    onTap: () => _showMoodCheckIn(context),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDarkMode
-                            ? AppTheme.darkAccent.withOpacity(0.1)
-                            : AppTheme.lightAccent.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isDarkMode
-                              ? AppTheme.darkAccent.withOpacity(0.3)
-                              : AppTheme.lightAccent.withOpacity(0.3),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.sentiment_satisfied_alt,
-                            color: isDarkMode
-                                ? AppTheme.darkAccent
-                                : AppTheme.lightAccent,
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            "Bugün nasıl hissediyorsun?",
-                            style: GoogleFonts.nunito(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: isDarkMode
-                                  ? Colors.white70
-                                  : Colors.black87,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            Icons.chevron_right,
-                            color: isDarkMode ? Colors.white54 : Colors.black54,
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
+                final today = DateTime.now();
+                final entry = moodProvider.getEntryForDate(today);
+
+                // Common decoration
+                final decoration = BoxDecoration(
+                  color: isDarkMode
+                      ? AppTheme.darkAccent.withOpacity(0.1)
+                      : AppTheme.lightAccent.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isDarkMode
+                        ? AppTheme.darkAccent.withOpacity(0.3)
+                        : AppTheme.lightAccent.withValues(alpha: 0.3),
                   ),
                 );
+
+                if (entry != null) {
+                  // HAS ENTRY -> Show Summary Card (Edit Mode)
+                  final mood = moodProvider.moods.firstWhere(
+                    (m) => m.code == entry.moodCode,
+                    orElse: () => MoodCategory(
+                      id: '',
+                      code: '',
+                      name: '',
+                      emoji: '❓',
+                      description: '',
+                      backgroundGradient: '',
+                      color: Colors.grey,
+                    ),
+                  );
+                  final hasMedia = entry.mediaPaths.isNotEmpty;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 0,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        showMoodEntryDialog(
+                          context,
+                          date: today,
+                          provider: moodProvider,
+                          currentMood: entry.moodCode,
+                          currentNote: entry.note,
+                          currentMedia: entry.mediaPaths,
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: decoration, // Reusing decoration
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isDarkMode
+                                    ? Colors.white10
+                                    : Colors.white54,
+                              ),
+                              child: Text(
+                                mood.emoji,
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Bugün: ${mood.name}",
+                                    style: GoogleFonts.nunito(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDarkMode
+                                          ? Colors.white
+                                          : Colors.black87,
+                                    ),
+                                  ),
+                                  if (entry.note != null &&
+                                      entry.note!.isNotEmpty)
+                                    Text(
+                                      entry.note!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 12,
+                                        color: isDarkMode
+                                            ? Colors.white54
+                                            : Colors.black54,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            if (hasMedia)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isDarkMode
+                                      ? Colors.black26
+                                      : Colors.white54,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.attach_file,
+                                      size: 14,
+                                      color: accentColor,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${entry.mediaPaths.length}',
+                                      style: GoogleFonts.nunito(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: accentColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            const SizedBox(width: 8),
+                            Icon(Icons.edit, size: 18, color: accentColor),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  // NO ENTRY -> Show Check-in Button (Create Mode)
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 0,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        showMoodEntryDialog(
+                          context,
+                          date: today,
+                          provider: moodProvider,
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: decoration,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.sentiment_satisfied_alt,
+                              color: isDarkMode
+                                  ? AppTheme.darkAccent
+                                  : AppTheme.lightAccent,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              lang.translate('mood_title'),
+                              style: GoogleFonts.nunito(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black87,
+                              ),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              Icons.chevron_right,
+                              color: isDarkMode
+                                  ? Colors.white54
+                                  : Colors.black54,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
               },
             ),
 
@@ -311,11 +455,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             Icons.edit_note,
                             size: 80,
-                            color: accentColor.withOpacity(0.3),
+                            color: accentColor.withValues(alpha: 0.3),
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            'Henüz hiç şiir yok...',
+                            lang.translate('empty_feed'),
                             style: GoogleFonts.nunito(
                               fontSize: 32,
                               color: Colors.grey,
@@ -323,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Sağ üstteki (+) ikonuna basarak\nilk şiirini ekle.',
+                            lang.translate('empty_feed_subtitle'),
                             textAlign: TextAlign.center,
                             style: GoogleFonts.nunito(
                               fontSize: 16,
@@ -348,52 +492,61 @@ class _HomeScreenState extends State<HomeScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Menü',
-                style: GoogleFonts.nunito(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildMenuItem(
-                icon: Provider.of<ThemeProvider>(context).isDarkMode
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
-                label: 'Temayı Değiştir',
-                onTap: () {
-                  Navigator.pop(context);
-                  Provider.of<ThemeProvider>(
-                    context,
-                    listen: false,
-                  ).toggleTheme();
-                },
-              ),
-              _buildMenuItem(
-                icon: Icons.text_fields_rounded,
-                label: 'Yazı Tipi',
-                onTap: () {
-                  Navigator.pop(context);
-                  _showFontPicker(context);
-                },
-              ),
-              _buildMenuItem(icon: Icons.settings, label: 'Ayarlar'),
-              _buildMenuItem(icon: Icons.info_outline, label: 'Hakkında'),
-              const SizedBox(height: 20),
-            ],
+      builder: (context) {
+        final lang = Provider.of<LanguageProvider>(context);
+        return Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
           ),
-        ),
-      ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  lang.translate('menu'),
+                  style: GoogleFonts.nunito(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildMenuItem(
+                  icon: Provider.of<ThemeProvider>(context).isDarkMode
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                  label: lang.translate('change_theme'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Provider.of<ThemeProvider>(
+                      context,
+                      listen: false,
+                    ).toggleTheme();
+                  },
+                ),
+                _buildMenuItem(
+                  icon: Icons.text_fields_rounded,
+                  label: lang.translate('font_style'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showFontPicker(context);
+                  },
+                ),
+                _buildMenuItem(
+                  icon: Icons.settings,
+                  label: lang.translate('settings'),
+                ),
+                _buildMenuItem(
+                  icon: Icons.info_outline,
+                  label: lang.translate('about'),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -418,6 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final lang = Provider.of<LanguageProvider>(context);
         final backgroundColor = isDarkMode
             ? const Color(0xFF1E1E1E)
             : Colors.white;
@@ -437,7 +591,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Yazı Tipi Seç',
+                  lang.translate('font_style'),
                   style: GoogleFonts.nunito(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -501,205 +655,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
-    );
-  }
-
-  void _showNoteInput(
-    BuildContext context,
-    MoodCategory mood,
-    MoodProvider provider,
-  ) {
-    final noteController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        return AlertDialog(
-          backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Text(mood.emoji, style: const TextStyle(fontSize: 28)),
-              const SizedBox(width: 10),
-              Text(
-                mood.name,
-                style: GoogleFonts.nunito(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          content: TextField(
-            controller: noteController,
-            maxLines: 3,
-            style: GoogleFonts.nunito(
-              color: isDark ? Colors.white : Colors.black87,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Bugün seni böyle hissettiren ne? (Opsiyonel)',
-              hintStyle: GoogleFonts.nunito(color: Colors.grey),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              filled: true,
-              fillColor: isDark ? Colors.black12 : Colors.grey[100],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'İptal',
-                style: GoogleFonts.nunito(color: Colors.grey),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                // Save Entry
-                provider.saveDailyEntry(
-                  DateTime.now(),
-                  mood.code,
-                  noteController.text,
-                );
-
-                // Close Dialog
-                Navigator.pop(context);
-                // Close BottomSheet (Check-in list)
-                Navigator.pop(context);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${mood.name} modunda hissettiğin günlüğüne işlendi.',
-                      style: GoogleFonts.nunito(color: Colors.white),
-                    ),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              },
-              child: Text(
-                'Kaydet',
-                style: GoogleFonts.nunito(color: Colors.white),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showMoodCheckIn(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        maxChildSize: 0.9,
-        builder: (context, scrollController) {
-          final isDark = Theme.of(context).brightness == Brightness.dark;
-
-          return Container(
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppTheme.darkBackground
-                  : AppTheme.lightBackground,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(30),
-              ),
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Bugün nasıl hissediyorsun?',
-                  style: GoogleFonts.nunito(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: Consumer<MoodProvider>(
-                    builder: (context, moodProvider, child) {
-                      final moods = moodProvider.moods
-                          .where((m) => m.code.isNotEmpty)
-                          .toList();
-
-                      return GridView.builder(
-                        controller: scrollController,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 15,
-                              mainAxisSpacing: 15,
-                              childAspectRatio: 0.8,
-                            ),
-                        itemCount: moods.length,
-                        itemBuilder: (context, index) {
-                          final mood = moods[index];
-                          // Simple grid item similar to AllMoodsScreen but simplified
-                          return GestureDetector(
-                            onTap: () {
-                              HapticFeedback.mediumImpact();
-                              _showNoteInput(context, mood, moodProvider);
-                            },
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  mood.emoji,
-                                  style: const TextStyle(fontSize: 40),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  mood.name,
-                                  style: GoogleFonts.nunito(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDark
-                                        ? Colors.white70
-                                        : Colors.black87,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
 }
