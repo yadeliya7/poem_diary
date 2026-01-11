@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../core/providers.dart';
 import '../core/language_provider.dart';
 import 'all_moods_screen.dart';
@@ -18,13 +19,19 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   // Removed local _showEntryDialog in favor of shared MoodEntryDialog
 
-  String _getGreeting() {
-    final lang = Provider.of<LanguageProvider>(context, listen: false);
+  Color _activeMoodColor = Colors.grey;
+
+  String _getGreetingKey() {
     final hour = DateTime.now().hour;
-    if (hour < 6) return lang.translate('good_night');
-    if (hour < 12) return lang.translate('good_morning');
-    if (hour < 18) return lang.translate('good_afternoon');
-    return lang.translate('good_evening');
+    if (hour >= 6 && hour < 12) {
+      return 'good_morning';
+    } else if (hour >= 12 && hour < 18) {
+      return 'good_afternoon';
+    } else if (hour >= 18 && hour < 22) {
+      return 'good_evening';
+    } else {
+      return 'good_night';
+    }
   }
 
   @override
@@ -50,58 +57,90 @@ class _HomeTabState extends State<HomeTab> {
             padding: EdgeInsets.only(
               top:
                   MediaQuery.of(context).padding.top +
-                  60, // Space for Settings/Header
-              left: 24.0,
-              right: 24.0,
-              bottom: 100.0, // Space for Bottom Nav
+                  10, // Compact top spacing
+              left: 20.0,
+              right: 20.0,
+              bottom: 100.0,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Large App Title
-                Text(
-                  Provider.of<LanguageProvider>(context).translate('app_title'),
-                  style: GoogleFonts.nunito(
-                    fontSize: 34,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
+                // 1. COMPACT CUSTOM APP BAR
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 0,
+                  ), // Already handled by ScrollView padding
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Row 1: Brand
+                      Text(
+                        "POEM DIARY",
+                        style: GoogleFonts.nunito(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Row 2: Greeting
+                      Text(
+                        Provider.of<LanguageProvider>(
+                          context,
+                        ).translate(_getGreetingKey()),
+                        style: GoogleFonts.nunito(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                      // Row 3: Date
+                      Text(
+                        DateFormat(
+                          'd MMMM yyyy',
+                          Provider.of<LanguageProvider>(
+                            context,
+                          ).currentLanguage,
+                        ).format(DateTime.now()),
+                        style: GoogleFonts.nunito(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
 
-                // Greeting
-                Text(
-                  _getGreeting(),
-                  style: GoogleFonts.nunito(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white70 : Colors.black54,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  Provider.of<LanguageProvider>(
-                    context,
-                  ).translate('daily_quote'),
-                  style: GoogleFonts.nunito(
-                    fontSize: 16,
-                    color: isDark ? Colors.white54 : Colors.black45,
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
+                const SizedBox(height: 20), // Spacing between Header and Moods
                 // 2. Mood Check-in Section
-                Container(
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF2A2A2A) : Colors.white,
                     borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: _activeMoodColor.withValues(
+                        alpha: 0.3,
+                      ), // Subtle colored border
+                      width: 1.5,
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        _activeMoodColor.withValues(alpha: 0.25),
+                        Theme.of(context).cardColor.withValues(alpha: 0.8),
+                      ],
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                        color: _activeMoodColor.withValues(
+                          alpha: 0.15,
+                        ), // Colored shadow glow
+                        blurRadius: 20,
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
@@ -136,6 +175,9 @@ class _HomeTabState extends State<HomeTab> {
 
                                 return GestureDetector(
                                   onTap: () {
+                                    setState(() {
+                                      _activeMoodColor = mood.color;
+                                    });
                                     showMoodEntryDialog(
                                       context,
                                       date: today,
