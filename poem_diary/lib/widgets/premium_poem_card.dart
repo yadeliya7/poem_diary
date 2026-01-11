@@ -163,6 +163,12 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
 
       if (!context.mounted) return;
 
+      // Get font family from provider BEFORE the off-screen capture
+      final fontFamily = Provider.of<PoemProvider>(
+        context,
+        listen: false,
+      ).contentFontFamily;
+
       // Split content into pages using smart pagination
       final pages = splitContentIntoPages(widget.poem.content);
       final List<XFile> filesToShare = [];
@@ -183,6 +189,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                 pageNumber: pageNumber,
                 totalPages: totalPages,
                 backgroundImage: activeImage,
+                fontFamily: fontFamily,
               ),
               delay: const Duration(milliseconds: 100),
               context: context,

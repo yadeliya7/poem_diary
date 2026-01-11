@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:provider/provider.dart';
 import '../models/poem_model.dart';
 import '../core/premium_effects.dart';
-import '../core/providers.dart';
 
 /// A beautiful shareable card widget for poems.
 ///
@@ -15,6 +13,7 @@ class ShareablePoemCard extends StatelessWidget {
   final int pageNumber;
   final int totalPages;
   final String backgroundImage;
+  final String fontFamily;
 
   const ShareablePoemCard({
     super.key,
@@ -23,6 +22,7 @@ class ShareablePoemCard extends StatelessWidget {
     required this.pageNumber,
     required this.totalPages,
     required this.backgroundImage,
+    required this.fontFamily,
   });
 
   String _formatDate(DateTime date) {
@@ -92,7 +92,7 @@ class ShareablePoemCard extends StatelessWidget {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.getFont(
-                    Provider.of<PoemProvider>(context).contentFontFamily,
+                    fontFamily,
                     color: Colors.white,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class ShareablePoemCard extends StatelessWidget {
                     maxLines: 25, // Safety limit
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.getFont(
-                      Provider.of<PoemProvider>(context).contentFontFamily,
+                      fontFamily,
                       color: Colors.white,
                       fontSize: 22,
                       height: 1.5,
@@ -137,7 +137,7 @@ class ShareablePoemCard extends StatelessWidget {
                   '- ${poem.author}',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.getFont(
-                    Provider.of<PoemProvider>(context).contentFontFamily,
+                    fontFamily,
                     color: Colors.white,
                     fontSize: 16,
                     height: 1.6,
