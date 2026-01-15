@@ -337,6 +337,7 @@ class MoodProvider extends ChangeNotifier {
     String moodCode,
     String? note, [
     List<String> mediaPaths = const [],
+    Map<String, dynamic> activities = const {},
   ]) async {
     final String dateKey =
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
@@ -346,6 +347,7 @@ class MoodProvider extends ChangeNotifier {
       note: note,
       date: date,
       mediaPaths: mediaPaths,
+      activities: activities,
     );
 
     _journal[dateKey] = entry;
@@ -380,6 +382,45 @@ class MoodProvider extends ChangeNotifier {
     final String key =
         "${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}";
     return _journal.containsKey(key);
+  }
+
+  /// Calculates the streak for a specific habit key.
+  /// Looks back from [currentDate] - 1 day.
+  /// Returns the number of consecutive days the habit was present ('true').
+  int getStreakFor(String habitKey, DateTime currentDate) {
+    int streak = 0;
+    // Start checking from yesterday relative to the given date
+    // (We consider the streak based on history, not including "today" if partially done)
+    // However, if the user asks for "Streak Including Today", logic might vary.
+    // Standard habit trackers usually count consecutive past days + today if done.
+    // Let's count BACKWARDS from yesterday.
+
+    DateTime checkDate = currentDate.subtract(const Duration(days: 1));
+
+    while (true) {
+      final String dateString =
+          "${checkDate.year}-${checkDate.month.toString().padLeft(2, '0')}-${checkDate.day.toString().padLeft(2, '0')}";
+
+      final entry = _journal[dateString];
+
+      // If no entry exists for this day, or the habit wasn't done, break.
+      if (entry == null) {
+        break;
+      }
+
+      // Check habit usage
+      // We assume habit values are stored as boolean 'true' or just exist.
+      // But wait! Previous logic stored 'int' for counters.
+      // This new logic expects booleans.
+      final val = entry.activities[habitKey];
+      if (val == true) {
+        streak++;
+        checkDate = checkDate.subtract(const Duration(days: 1));
+      } else {
+        break;
+      }
+    }
+    return streak;
   }
 
   final List<MoodCategory> _moods = [
@@ -421,12 +462,12 @@ class MoodProvider extends ChangeNotifier {
     ),
     MoodCategory(
       id: '4',
-      code: 'mystic',
-      name: 'Gizemli',
-      emoji: '🌙',
-      description: 'Büyülü ve derin',
-      backgroundGradient: 'mystic',
-      color: Colors.purple,
+      code: 'angry',
+      name: 'Sinirli',
+      emoji: '🔥', // Fire
+      description: 'Öfkeli ve gergin',
+      backgroundGradient: 'angry',
+      color: Colors.redAccent,
     ),
     MoodCategory(
       id: '5',

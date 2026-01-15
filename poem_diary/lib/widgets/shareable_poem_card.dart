@@ -14,6 +14,7 @@ class ShareablePoemCard extends StatelessWidget {
   final int totalPages;
   final String backgroundImage;
   final String fontFamily;
+  final String locale;
 
   const ShareablePoemCard({
     super.key,
@@ -23,6 +24,7 @@ class ShareablePoemCard extends StatelessWidget {
     required this.totalPages,
     required this.backgroundImage,
     required this.fontFamily,
+    required this.locale,
   });
 
   String _formatDate(DateTime date) {
@@ -165,7 +167,9 @@ class ShareablePoemCard extends StatelessWidget {
                     Icon(Icons.auto_awesome, color: Colors.white54, size: 14),
                     const SizedBox(width: 8),
                     Text(
-                      'Poem Diary ile oluşturuldu',
+                      locale == 'tr'
+                          ? 'Poem Diary ile oluşturuldu'
+                          : 'Created with Poem Diary',
                       style: GoogleFonts.montserrat(
                         color: Colors.white54,
                         fontSize: 11,

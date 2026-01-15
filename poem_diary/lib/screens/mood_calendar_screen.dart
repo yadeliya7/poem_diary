@@ -11,8 +11,10 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/poem_model.dart';
+import '../models/daily_entry_model.dart';
 import '../widgets/mood_entry_dialog.dart';
 import '../widgets/monthly_mood_share_card.dart';
+import 'package:line_icons/line_icons.dart';
 
 class MoodCalendarScreen extends StatefulWidget {
   const MoodCalendarScreen({super.key});
@@ -468,12 +470,21 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                         currentMood: moodCode,
                         currentNote: note,
                         currentMedia: entry?.mediaPaths ?? [],
+                        currentActivities: entry?.activities ?? {},
                       );
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 24),
+
+              // Activity Chips
+              if (entry != null && entry.activities.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  child: _buildWrapIcons(entry),
+                ),
 
               // Note Content
               Container(
@@ -633,5 +644,155 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
     }
 
     return null; // Use default
+  }
+
+  // Copied from HomeTab for consistency. Consider moving to a shared widget.
+  Widget _buildWrapIcons(DailyEntry entry) {
+    List<Widget> chips = [];
+
+    Widget makeChip(IconData icon, Color color, String label) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.nunito(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final act = entry.activities;
+
+    if (act['sleep'] == 'good') {
+      chips.add(makeChip(LineIcons.sun, Colors.orange, 'İyi Uyku'));
+    }
+    if (act['sleep'] == 'medium') {
+      chips.add(
+        makeChip(LineIcons.cloudWithMoon, Colors.blueGrey, 'Orta Uyku'),
+      );
+    }
+    if (act['sleep'] == 'bad') {
+      chips.add(makeChip(LineIcons.moon, Colors.indigo, 'Kötü Uyku'));
+    }
+
+    if (act['weather'] == 'sunny') {
+      chips.add(makeChip(LineIcons.sun, Colors.amber, 'Güneşli'));
+    }
+    if (act['weather'] == 'rainy') {
+      chips.add(makeChip(LineIcons.cloudWithRain, Colors.blue, 'Yağmurlu'));
+    }
+    if (act['weather'] == 'cloudy') {
+      chips.add(makeChip(LineIcons.cloud, Colors.grey, 'Bulutlu'));
+    }
+    if (act['weather'] == 'snowy') {
+      chips.add(makeChip(LineIcons.snowflake, Colors.lightBlueAccent, 'Karlı'));
+    }
+
+    // LIST HELPERS
+    List<String> listFrom(dynamic v) =>
+        (v as List?)?.map((e) => e.toString()).toList() ?? [];
+
+    final health = listFrom(act['health']);
+    if (health.contains('sport')) {
+      chips.add(makeChip(LineIcons.running, Colors.green, 'Spor'));
+    }
+    if (health.contains('healthy_food')) {
+      chips.add(makeChip(LineIcons.carrot, Colors.greenAccent, 'Sağlıklı'));
+    }
+    if (health.contains('fast_food')) {
+      chips.add(
+        makeChip(LineIcons.hamburger, Colors.orangeAccent, 'Fast Food'),
+      );
+    }
+    if (health.contains('water')) {
+      chips.add(makeChip(LineIcons.tint, Colors.blueAccent, 'Su'));
+    }
+
+    final social = listFrom(act['social']);
+    if (social.contains('friends')) {
+      chips.add(makeChip(LineIcons.userFriends, Colors.purple, 'Arkadaşlar'));
+    }
+    if (social.contains('family')) {
+      chips.add(makeChip(LineIcons.home, Colors.brown, 'Aile'));
+    }
+    if (social.contains('party')) {
+      chips.add(makeChip(LineIcons.cocktail, Colors.deepPurple, 'Parti'));
+    }
+    if (social.contains('partner')) {
+      chips.add(makeChip(LineIcons.heartAlt, Colors.red, 'Partner'));
+    }
+
+    final hobbies = listFrom(act['hobbies']);
+    if (hobbies.contains('gaming')) {
+      chips.add(makeChip(LineIcons.gamepad, Colors.indigoAccent, 'Oyun'));
+    }
+    if (hobbies.contains('reading')) {
+      chips.add(makeChip(LineIcons.book, Colors.brown, 'Okuma'));
+    }
+    if (hobbies.contains('movie')) {
+      chips.add(makeChip(LineIcons.video, Colors.redAccent, 'Film'));
+    }
+    if (hobbies.contains('art')) {
+      chips.add(makeChip(LineIcons.palette, Colors.pinkAccent, 'Sanat'));
+    }
+
+    final chores = listFrom(act['chores']);
+    if (chores.contains('cleaning')) {
+      chips.add(makeChip(LineIcons.broom, Colors.teal, 'Temizlik'));
+    }
+    if (chores.contains('shopping')) {
+      chips.add(makeChip(LineIcons.shoppingCart, Colors.orange, 'Alışveriş'));
+    }
+    if (chores.contains('laundry')) {
+      chips.add(makeChip(LineIcons.tShirt, Colors.blueGrey, 'Çamaşır'));
+    }
+    if (chores.contains('cooking')) {
+      chips.add(makeChip(LineIcons.utensils, Colors.deepOrange, 'Yemek'));
+    }
+
+    final selfcare = listFrom(act['selfcare']);
+    if (selfcare.contains('manicure')) {
+      chips.add(makeChip(LineIcons.handHoldingHeart, Colors.pink, 'Manikür'));
+    }
+    if (selfcare.contains('skincare')) {
+      chips.add(makeChip(LineIcons.spa, Colors.lightGreen, 'Cilt Bakımı'));
+    }
+    if (selfcare.contains('hair')) {
+      chips.add(makeChip(LineIcons.cut, Colors.brown, 'Saç'));
+    }
+
+    if (act['no_smoking'] == true) {
+      chips.add(makeChip(LineIcons.smokingBan, Colors.redAccent, 'Sigara Yok'));
+    }
+    if (act['social_media_detox'] == true) {
+      chips.add(makeChip(LineIcons.mobilePhone, Colors.blueGrey, 'Detoks'));
+    }
+    if (act['meditation'] == true) {
+      chips.add(makeChip(LineIcons.spa, Colors.purpleAccent, 'Meditasyon'));
+    }
+
+    if (chips.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      alignment: WrapAlignment.start,
+      children: chips,
+    );
   }
 }

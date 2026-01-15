@@ -15,7 +15,6 @@ class PoemDetailScreen extends StatelessWidget {
       builder: (context, poemProvider, child) {
         // Ensure we have the latest version of the poem (for favorite status)
         final currentPoem = poemProvider.getPoemById(poem.id) ?? poem;
-        final isFav = currentPoem.isFavorite;
 
         return Scaffold(
           extendBodyBehindAppBar: true,
@@ -23,30 +22,6 @@ class PoemDetailScreen extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
             iconTheme: const IconThemeData(color: Colors.white),
-            actions: [
-              IconButton(
-                icon: Icon(
-                  isFav ? Icons.favorite : Icons.favorite_border,
-                  color: isFav ? Colors.redAccent : Colors.white,
-                  size: 28,
-                ),
-                onPressed: () {
-                  poemProvider.toggleFavorite(currentPoem.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        isFav
-                            ? 'Favorilerden çıkarıldı.'
-                            : 'Favorilere eklendi! ❤️',
-                      ),
-                      duration: const Duration(milliseconds: 1000),
-                      backgroundColor: isFav ? Colors.black54 : Colors.red,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(width: 10),
-            ],
           ),
           body: SizedBox(
             width: double.infinity,

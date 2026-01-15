@@ -98,7 +98,9 @@ class MonthlyMoodShareCard extends StatelessWidget {
               const Icon(Icons.edit_note, size: 16, color: Colors.grey),
               const SizedBox(width: 8),
               Text(
-                footerText,
+                locale == 'tr'
+                    ? 'Poem Diary ile oluşturuldu'
+                    : 'Created with Poem Diary',
                 style: GoogleFonts.nunito(
                   fontSize: 12,
                   color: Colors.grey,
@@ -158,9 +160,9 @@ class MonthlyMoodShareCard extends StatelessWidget {
           child: Text(
             '$dayNum',
             style: GoogleFonts.nunito(
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: mood != null ? Colors.white : Colors.grey,
+              color: mood != null ? Colors.white : Colors.grey[700],
             ),
           ),
         );

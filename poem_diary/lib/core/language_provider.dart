@@ -76,7 +76,7 @@ class LanguageProvider extends ChangeNotifier {
       'mood_happy': 'Neşe',
       'mood_sad': 'Hüzün',
       'mood_romantic': 'Romantik',
-      'mood_mystic': 'Gizemli',
+      'mood_angry': 'Sinirli',
       'mood_tired': 'Yorgun',
       'mood_hopeful': 'Umut',
       'mood_peaceful': 'Huzur',
@@ -110,6 +110,7 @@ class LanguageProvider extends ChangeNotifier {
       'app_title': 'Şiir Günlüğü',
       'msg_no_poem_selected': 'Henüz bir şiir seçilmedi.',
       'created_with': 'ile oluşturuldu',
+      'daily_goals': 'Günlük Hedefler',
     },
     'en': {
       'library': 'My Library',
@@ -166,7 +167,7 @@ class LanguageProvider extends ChangeNotifier {
       'mood_happy': 'Joy',
       'mood_sad': 'Sadness',
       'mood_romantic': 'Romantic',
-      'mood_mystic': 'Mysterious',
+      'mood_angry': 'Angry',
       'mood_tired': 'Tired',
       'mood_hopeful': 'Hopeful',
       'mood_peaceful': 'Peaceful',
@@ -200,6 +201,7 @@ class LanguageProvider extends ChangeNotifier {
       'app_title': 'Poem Diary',
       'msg_no_poem_selected': 'No poem selected yet.',
       'created_with': 'Created with',
+      'daily_goals': 'Daily Goals',
     },
   };
 

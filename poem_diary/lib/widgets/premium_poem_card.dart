@@ -169,6 +169,11 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
         listen: false,
       ).contentFontFamily;
 
+      final currentLocale = Provider.of<LanguageProvider>(
+        context,
+        listen: false,
+      ).currentLanguage;
+
       // Split content into pages using smart pagination
       final pages = splitContentIntoPages(widget.poem.content);
       final List<XFile> filesToShare = [];
@@ -190,6 +195,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                 totalPages: totalPages,
                 backgroundImage: activeImage,
                 fontFamily: fontFamily,
+                locale: currentLocale,
               ),
               delay: const Duration(milliseconds: 100),
               context: context,

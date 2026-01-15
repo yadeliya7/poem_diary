@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:line_icons/line_icons.dart';
 
 import 'home_tab.dart';
 import 'mood_calendar_screen.dart';
 import 'library_screen.dart';
 import 'compose_poem_screen.dart';
+import 'analysis_screen.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -20,6 +22,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     const LibraryScreen(), // Index 0: Kitaplık
     const HomeTab(), // Index 1: Akış (Home)
     const MoodCalendarScreen(), // Index 2: Takvim
+    const AnalysisScreen(), // Index 3: Analiz
   ];
 
   void _onItemTapped(int index) {
@@ -70,6 +73,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                   _buildNavItem(Icons.bookmarks, 0),
                   _buildNavItem(Icons.home_filled, 1),
                   _buildNavItem(Icons.calendar_month, 2),
+                  _buildNavItem(LineIcons.pieChart, 3),
                 ],
               ),
             ),
