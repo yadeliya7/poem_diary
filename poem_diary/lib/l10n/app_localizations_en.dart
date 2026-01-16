@@ -120,7 +120,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabHome => 'Home';
 
   @override
-  String get tabLibrary => 'Library';
+  String get tabLibrary => 'Journal';
 
   @override
   String get tabCalendar => 'Calendar';
@@ -154,6 +154,295 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get msgSaved => 'Saved successfully';
+
+  @override
+  String introHighEnergy(String weather) {
+    return 'My energy was great today! $weather';
+  }
+
+  @override
+  String introLowEnergy(String weather) {
+    return 'It was a tiring day. $weather';
+  }
+
+  @override
+  String introNeutral(String weather) {
+    return 'I had a calm day. $weather';
+  }
+
+  @override
+  String healthAction(String activities) {
+    return 'I took care of my body: $activities.';
+  }
+
+  @override
+  String socialAction(String activities) {
+    return 'I spent time with loved ones: $activities.';
+  }
+
+  @override
+  String hobbyAction(String activities) {
+    return 'I improved myself and had fun: $activities.';
+  }
+
+  @override
+  String choreAction(String activities) {
+    return 'I handled my responsibilities: $activities.';
+  }
+
+  @override
+  String selfCareAction(String activities) {
+    return 'I pampered myself: $activities.';
+  }
+
+  @override
+  String get streakBonus => 'I am amazing, I reached my goals! 🚀';
+
+  @override
+  String streakSpecific(int count, String activity) {
+    return 'Successfully continued my $activity goal for day $count! 🔥';
+  }
+
+  @override
+  String dayNote(Object note) {
+    return 'Note of the day: $note';
+  }
+
+  @override
+  String get journal_sport =>
+      'I energized my body and worked up a sweat with sports today.';
+
+  @override
+  String get journal_healthy_food =>
+      'I took care of my body and ate healthy food.';
+
+  @override
+  String get journal_fast_food =>
+      'I treated myself to a fast food cheat meal today.';
+
+  @override
+  String get journal_water =>
+      'I refreshed my body by drinking plenty of water.';
+
+  @override
+  String get journal_walking => 'I cleared my mind with a nice walk.';
+
+  @override
+  String get journal_vitamins =>
+      'I supported my immunity by taking my vitamins.';
+
+  @override
+  String get journal_sleep_health =>
+      'I saved energy by getting extra sleep today.';
+
+  @override
+  String get journal_doctor =>
+      'I didn\'t neglect my health and went for a doctor\'s check-up.';
+
+  @override
+  String get journal_friends => 'I met up with friends and had a great time.';
+
+  @override
+  String get journal_family =>
+      'I enjoyed the peace of spending time with my family.';
+
+  @override
+  String get journal_party => 'I joined a party and enjoyed the fun!';
+
+  @override
+  String get journal_partner =>
+      'I shared romantic and special moments with my partner.';
+
+  @override
+  String get journal_guests =>
+      'I enjoyed the pleasure of hosting guests in my home.';
+
+  @override
+  String get journal_colleagues =>
+      'I spent productive time with my colleagues.';
+
+  @override
+  String get journal_travel =>
+      'I hit the road and felt the freedom of traveling.';
+
+  @override
+  String get journal_volunteer =>
+      'I nourished my soul by participating in volunteer work.';
+
+  @override
+  String get journal_gaming =>
+      'I relieved the day\'s stress by diving into the world of games.';
+
+  @override
+  String get journal_reading => 'I got lost among the pages of my book.';
+
+  @override
+  String get journal_movie => 'I enjoyed watching a nice movie/series.';
+
+  @override
+  String get journal_art =>
+      'I expressed my inner creativity by engaging in art.';
+
+  @override
+  String get journal_music =>
+      'I got carried away by the rhythm of music and rested my soul.';
+
+  @override
+  String get journal_coding =>
+      'I experienced the pleasure of building new things by coding.';
+
+  @override
+  String get journal_photography =>
+      'I captured life through my lens and took photos.';
+
+  @override
+  String get journal_crafts =>
+      'I spent a productive day dealing with handicrafts.';
+
+  @override
+  String get journal_cleaning =>
+      'I cleaned the house and created a spacious living space.';
+
+  @override
+  String get journal_shopping =>
+      'I went shopping and completed my deficiencies.';
+
+  @override
+  String get journal_laundry => 'I washed the laundry and provided order.';
+
+  @override
+  String get journal_cooking =>
+      'I went into the kitchen and prepared delicious meals.';
+
+  @override
+  String get journal_ironing => 'I ironed my clothes and made them look sharp.';
+
+  @override
+  String get journal_dishes =>
+      'I handled the dishes and left the kitchen spotless.';
+
+  @override
+  String get journal_repair => 'I handled small repair jobs at home.';
+
+  @override
+  String get journal_plants =>
+      'I took care of my plants and gave them life water.';
+
+  @override
+  String get journal_manicure =>
+      'I applied care to my hands by having a manicure.';
+
+  @override
+  String get journal_skincare =>
+      'I pampered myself by applying my skincare routine.';
+
+  @override
+  String get journal_hair => 'I cared for my hair and felt renewed.';
+
+  @override
+  String get journal_massage => 'I relaxed all my muscles with a massage.';
+
+  @override
+  String get journal_facemask =>
+      'I revitalized my skin by applying a face mask.';
+
+  @override
+  String get journal_bath => 'I threw off all my tiredness with a hot bath.';
+
+  @override
+  String get journal_digital_detox =>
+      'I moved away from technology and stayed alone with myself.';
+
+  @override
+  String get journal_no_smoking =>
+      'I did a favor to my lungs by not smoking today.';
+
+  @override
+  String get journal_social_media_detox =>
+      'I enjoyed the moment by staying away from social media.';
+
+  @override
+  String get journal_read_book =>
+      'I successfully completed my daily book reading goal.';
+
+  @override
+  String get journal_drink_water =>
+      'I met my water drinking goal, hydration complete!';
+
+  @override
+  String get journal_meditation => 'I focused on my inner peace by meditating.';
+
+  @override
+  String get journal_early_rise =>
+      'I caught the day by waking up before the sun.';
+
+  @override
+  String get journal_no_sugar => 'I preserved my will by eating sugar-free.';
+
+  @override
+  String get journal_journaling =>
+      'I poured my feelings onto paper by writing in my journal.';
+
+  @override
+  String get journal_10k_steps =>
+      'I passed 10 thousand steps, I reached the goal!';
+
+  @override
+  String get mood_sentence_huzun =>
+      'I felt a sadness that was hard to describe.';
+
+  @override
+  String get mood_sentence_nese => 'I was bubbling with joy and energy!';
+
+  @override
+  String get mood_sentence_nostaljik =>
+      'Memories came flooding back; I felt nostalgic.';
+
+  @override
+  String get mood_sentence_sinirli => 'I was feeling tense and a bit on edge.';
+
+  @override
+  String get mood_sentence_umut =>
+      'A beautiful hope for the future blossomed within me.';
+
+  @override
+  String get mood_sentence_huzur =>
+      'I was in a calm, serene, and peaceful state of mind.';
+
+  @override
+  String get mood_sentence_romantik =>
+      'Romantic winds were blowing in my heart.';
+
+  @override
+  String get mood_sentence_yorgun =>
+      'I felt a bit tired and worn out throughout the day.';
+
+  @override
+  String get sleep_good => 'Also, I had a great sleep.';
+
+  @override
+  String get sleep_bad => 'However, I didn\'t sleep very well.';
+
+  @override
+  String weather_context(Object weather) {
+    return 'The weather was $weather.';
+  }
+
+  @override
+  String get weather_sentence_sunny =>
+      'The warm energy of the sun accompanied my day.';
+
+  @override
+  String get weather_sentence_cloudy =>
+      'The sky was cloudy; a calm and serene atmosphere prevailed.';
+
+  @override
+  String get weather_sentence_rainy =>
+      'The sound of rain rested my soul as drops washed the city.';
+
+  @override
+  String get weather_sentence_snowy =>
+      'Falling snow covered everything like a white fairytale.';
 
   @override
   String get msgError => 'An error occurred';
@@ -662,6 +951,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherSnowy => 'Snowy';
+
+  @override
+  String get weatherWindy => 'Windy';
+
+  @override
+  String get weatherFoggy => 'Foggy';
+
+  @override
+  String get weatherHail => 'Hail';
+
+  @override
+  String get weatherSentenceSunny =>
+      'The warmth and energy of the sun reflected on my entire day.';
+
+  @override
+  String get weatherSentenceRainy =>
+      'The sound and peace of the rain accompanied my day.';
+
+  @override
+  String get weatherSentenceCloudy =>
+      'Beams of light filtering through the clouds added serenity to my day.';
+
+  @override
+  String get weatherSentenceSnowy =>
+      'The whiteness of the falling snow brought pure peace to my day.';
+
+  @override
+  String get weatherSentenceWindy =>
+      'The energy and howl of the wind accompanied my day.';
+
+  @override
+  String get weatherSentenceFoggy =>
+      'The fog descending on the city added a mysterious vibe to my day.';
+
+  @override
+  String get weatherSentenceHail =>
+      'The sudden hail added excitement and action to my day.';
 
   @override
   String get sectionNotesMedia => 'Notes & Media';

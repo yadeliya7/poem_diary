@@ -10,7 +10,6 @@ import '../core/providers.dart';
 import '../core/language_provider.dart';
 
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 Future<void> showMoodEntryDialog(
   BuildContext context, {
@@ -559,29 +558,55 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        _buildFilterChip(
+                        _buildChoiceChip(
                           AppLocalizations.of(context)!.weatherSunny,
                           LineIcons.sun,
                           'weather',
                           'sunny',
+                          activeColor: Colors.amber,
                         ),
-                        _buildFilterChip(
+                        _buildChoiceChip(
                           AppLocalizations.of(context)!.weatherRainy,
                           LineIcons.cloudWithRain,
                           'weather',
                           'rainy',
+                          activeColor: Colors.blue,
                         ),
-                        _buildFilterChip(
+                        _buildChoiceChip(
                           AppLocalizations.of(context)!.weatherCloudy,
                           LineIcons.cloud,
                           'weather',
                           'cloudy',
+                          activeColor: Colors.grey,
                         ),
-                        _buildFilterChip(
+                        _buildChoiceChip(
                           AppLocalizations.of(context)!.weatherSnowy,
                           LineIcons.snowflake,
                           'weather',
                           'snowy',
+                          activeColor: Colors.lightBlue,
+                        ),
+                        _buildChoiceChip(
+                          AppLocalizations.of(context)!.weatherWindy,
+                          LineIcons.wind,
+                          'weather',
+                          'windy',
+                          activeColor: Colors.blueGrey,
+                        ),
+                        _buildChoiceChip(
+                          AppLocalizations.of(context)!.weatherFoggy,
+                          Icons
+                              .foggy, // Ensure Icons.foggy exists or use alternative
+                          'weather',
+                          'foggy',
+                          activeColor: Colors.blueGrey,
+                        ),
+                        _buildChoiceChip(
+                          AppLocalizations.of(context)!.weatherHail,
+                          Icons.ac_unit,
+                          'weather',
+                          'hail',
+                          activeColor: Colors.lightBlueAccent,
                         ),
                       ],
                     ),

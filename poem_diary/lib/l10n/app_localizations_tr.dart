@@ -121,7 +121,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tabHome => 'Akış';
 
   @override
-  String get tabLibrary => 'Kitaplık';
+  String get tabLibrary => 'Günlük';
 
   @override
   String get tabCalendar => 'Takvim';
@@ -155,6 +155,284 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get msgSaved => 'Başarıyla kaydedildi';
+
+  @override
+  String introHighEnergy(String weather) {
+    return 'Bugün enerjim yerindeydi! $weather';
+  }
+
+  @override
+  String introLowEnergy(String weather) {
+    return 'Biraz yorgun hissettiğim bir gündü. $weather';
+  }
+
+  @override
+  String introNeutral(String weather) {
+    return 'Sakin bir gün geçirdim. $weather';
+  }
+
+  @override
+  String healthAction(String activities) {
+    return 'Bedenime iyi baktım: $activities.';
+  }
+
+  @override
+  String socialAction(String activities) {
+    return 'Sevdiklerimle vakit ayırdım: $activities.';
+  }
+
+  @override
+  String hobbyAction(String activities) {
+    return 'Kendimi geliştirdim ve eğlendim: $activities.';
+  }
+
+  @override
+  String choreAction(String activities) {
+    return 'Sorumluluklarımı hallettim: $activities.';
+  }
+
+  @override
+  String selfCareAction(String activities) {
+    return 'Kendimi şımarttım: $activities.';
+  }
+
+  @override
+  String get streakBonus => 'Harikayım, hedeflerime ulaştım! 🚀';
+
+  @override
+  String streakSpecific(int count, String activity) {
+    return '$count. günümde $activity hedefime başarıyla devam ettim! 🔥';
+  }
+
+  @override
+  String dayNote(Object note) {
+    return 'Günün Notu: $note';
+  }
+
+  @override
+  String get journal_sport =>
+      'Bugün spor yaparak bedenimi canlandırdım ve ter attım.';
+
+  @override
+  String get journal_healthy_food =>
+      'Vücuduma iyi baktım ve sağlıklı besinler tükettim.';
+
+  @override
+  String get journal_fast_food =>
+      'Bugünlük kendime izin verdim ve fast food kaçamağı yaptım.';
+
+  @override
+  String get journal_water => 'Bol bol su içerek vücudumu tazeledim.';
+
+  @override
+  String get journal_walking => 'Güzel bir yürüyüşle zihnimi açtım.';
+
+  @override
+  String get journal_vitamins =>
+      'Vitaminlerimi alarak bağışıklığımı destekledim.';
+
+  @override
+  String get journal_sleep_health =>
+      'Gün içinde ekstra uyuyarak enerji depoladım.';
+
+  @override
+  String get journal_doctor =>
+      'Doktor kontrolüne giderek sağlığımı ihmal etmedim.';
+
+  @override
+  String get journal_friends => 'Arkadaşlarımla buluşup harika vakit geçirdim.';
+
+  @override
+  String get journal_family => 'Ailemle zaman geçirmenin huzurunu yaşadım.';
+
+  @override
+  String get journal_party => 'Partiye katıldım ve eğlencenin tadını çıkardım!';
+
+  @override
+  String get journal_partner => 'Partnerimle romantik ve özel anlar paylaştım.';
+
+  @override
+  String get journal_guests => 'Evimde misafir ağırlamanın keyfini yaşadım.';
+
+  @override
+  String get journal_colleagues => 'İş arkadaşlarımla verimli vakit geçirdim.';
+
+  @override
+  String get journal_travel =>
+      'Yollara düştüm, seyahat etmenin özgürlüğünü hissettim.';
+
+  @override
+  String get journal_volunteer =>
+      'Gönüllü çalışmalara katılarak ruhumu besledim.';
+
+  @override
+  String get journal_gaming => 'Oyun dünyasına dalarak günün stresini attım.';
+
+  @override
+  String get journal_reading => 'Kitabımın sayfaları arasında kayboldum.';
+
+  @override
+  String get journal_movie => 'Güzel bir film/dizi izleyerek keyif yaptım.';
+
+  @override
+  String get journal_art =>
+      'Sanatla ilgilenerek içimdeki yaratıcılığı dışa vurdum.';
+
+  @override
+  String get journal_music =>
+      'Müziğin ritmine kapıldım ve ruhumu dinlendirdim.';
+
+  @override
+  String get journal_coding =>
+      'Kod yazarak yeni şeyler inşa etmenin hazzını yaşadım.';
+
+  @override
+  String get journal_photography =>
+      'Kadrajımdan hayatı yakaladım ve fotoğraf çektim.';
+
+  @override
+  String get journal_crafts =>
+      'El işleriyle uğraşarak üretken bir gün geçirdim.';
+
+  @override
+  String get journal_cleaning =>
+      'Evi temizleyip ferah bir yaşam alanı yarattım.';
+
+  @override
+  String get journal_shopping => 'Alışverişe çıktım ve eksiklerimi tamamladım.';
+
+  @override
+  String get journal_laundry => 'Çamaşırları yıkayıp düzeni sağladım.';
+
+  @override
+  String get journal_cooking =>
+      'Mutfağa girdim ve lezzetli yemekler hazırladım.';
+
+  @override
+  String get journal_ironing => 'Ütü yaparak kıyafetlerimi jilet gibi yaptım.';
+
+  @override
+  String get journal_dishes =>
+      'Bulaşıkları halledip mutfağı tertemiz bıraktım.';
+
+  @override
+  String get journal_repair => 'Evdeki ufak tamirat işlerini hallettim.';
+
+  @override
+  String get journal_plants =>
+      'Bitkilerimle ilgilendim, onlara can suyu verdim.';
+
+  @override
+  String get journal_manicure => 'Manikür yaptırarak ellerime bakım uyguladım.';
+
+  @override
+  String get journal_skincare =>
+      'Cilt bakımı rutinimi uygulayıp kendimi şımarttım.';
+
+  @override
+  String get journal_hair =>
+      'Saçlarıma bakım yaptım ve kendimi yenilenmiş hissettim.';
+
+  @override
+  String get journal_massage => 'Masajla tüm kaslarımı gevşettim.';
+
+  @override
+  String get journal_facemask => 'Yüz maskesi yaparak cildimi canlandırdım.';
+
+  @override
+  String get journal_bath => 'Sıcak bir banyo ile tüm yorgunluğumu attım.';
+
+  @override
+  String get journal_digital_detox =>
+      'Teknolojiden uzaklaşıp kendimle baş başa kaldım.';
+
+  @override
+  String get journal_no_smoking =>
+      'Bugün sigara içmeyerek ciğerlerime bir iyilik yaptım.';
+
+  @override
+  String get journal_social_media_detox =>
+      'Sosyal medyadan uzak durarak anın tadını çıkardım.';
+
+  @override
+  String get journal_read_book =>
+      'Günlük kitap okuma hedefimi başarıyla tamamladım.';
+
+  @override
+  String get journal_drink_water =>
+      'Su içme hedefimi tutturdum, hidrasyon tamam!';
+
+  @override
+  String get journal_meditation => 'Meditasyon yaparak iç huzuruma odaklandım.';
+
+  @override
+  String get journal_early_rise => 'Güneşten önce uyanarak günü yakaladım.';
+
+  @override
+  String get journal_no_sugar => 'Şekersiz beslenerek irademi korudum.';
+
+  @override
+  String get journal_journaling =>
+      'Günlüğümü yazarak duygularımı kağıda döktüm.';
+
+  @override
+  String get journal_10k_steps => '10 bin adımı devirdim, hedefe ulaştım!';
+
+  @override
+  String get mood_sentence_huzun => 'İçimde tarif etmesi zor bir hüzün vardı.';
+
+  @override
+  String get mood_sentence_nese => 'İçim kıpır kıpırdı, neşe doluydum!';
+
+  @override
+  String get mood_sentence_nostaljik =>
+      'Eski günler aklıma geldi, biraz nostaljik hissettim.';
+
+  @override
+  String get mood_sentence_sinirli =>
+      'Biraz gergindim, sinirlerim yay gibiydi.';
+
+  @override
+  String get mood_sentence_umut =>
+      'Geleceğe dair içimde güzel bir umut yeşerdi.';
+
+  @override
+  String get mood_sentence_huzur =>
+      'Sakin, dingin ve huzurlu bir ruh halindeydim.';
+
+  @override
+  String get mood_sentence_romantik => 'Kalbimde romantik rüzgarlar esiyordu.';
+
+  @override
+  String get mood_sentence_yorgun =>
+      'Üzerimde tatlı bir yorgunluk ve ağırlık vardı.';
+
+  @override
+  String get sleep_good => 'Ayrıca uykumu harika almıştım.';
+
+  @override
+  String get sleep_bad => 'Ancak uykumu pek alamamıştım.';
+
+  @override
+  String weather_context(Object weather) {
+    return 'Hava da $weather.';
+  }
+
+  @override
+  String get weather_sentence_sunny =>
+      'Güneşin sıcak enerjisi günüme eşlik etti.';
+
+  @override
+  String get weather_sentence_cloudy =>
+      'Gökyüzü bulutluydu, sakin ve dingin bir atmosfer hakimdi.';
+
+  @override
+  String get weather_sentence_rainy =>
+      'Yağmurun sesi ruhumu dinlendirdi, damlalar şehri yıkadı.';
+
+  @override
+  String get weather_sentence_snowy =>
+      'Lapa lapa yağan kar, etrafı bembeyaz bir masal gibi kapladı.';
 
   @override
   String get msgError => 'Bir hata oluştu';
@@ -663,6 +941,43 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get weatherSnowy => 'Karlı';
+
+  @override
+  String get weatherWindy => 'Rüzgarlı';
+
+  @override
+  String get weatherFoggy => 'Sisli';
+
+  @override
+  String get weatherHail => 'Dolu';
+
+  @override
+  String get weatherSentenceSunny =>
+      'Güneşin sıcaklığı ve enerjisi tüm günüme yansıdı.';
+
+  @override
+  String get weatherSentenceRainy =>
+      'Yağmurun sesi ve huzuru günüme eşlik etti.';
+
+  @override
+  String get weatherSentenceCloudy =>
+      'Bulutların arasından süzülen ışık huzmeleri günüme dinginlik kattı.';
+
+  @override
+  String get weatherSentenceSnowy =>
+      'Lapa lapa yağan karın beyazlığı günüme saf bir huzur getirdi.';
+
+  @override
+  String get weatherSentenceWindy =>
+      'Rüzgarın enerjisi ve uğultusu günüme eşlik etti.';
+
+  @override
+  String get weatherSentenceFoggy =>
+      'Şehrin üzerine çöken sis, günüme gizemli bir hava kattı.';
+
+  @override
+  String get weatherSentenceHail =>
+      'Aniden bastıran dolu yağışı günüme heyecan ve hareket getirdi.';
 
   @override
   String get sectionNotesMedia => 'Notlar & Medya';

@@ -74,7 +74,7 @@
     "@calendarTitle": {},
     "tabHome": "Home",
     "@tabHome": {},
-    "tabLibrary": "Library",
+    "tabLibrary": "Journal",
     "@tabLibrary": {},
     "tabCalendar": "Calendar",
     "@tabCalendar": {},
@@ -98,6 +98,147 @@
     "@btnCancel": {},
     "msgSaved": "Saved successfully",
     "@msgSaved": {},
+    "introHighEnergy": "My energy was great today! {weather}",
+    "@introHighEnergy": {
+        "placeholders": {
+            "weather": {
+                "type": "String"
+            }
+        }
+    },
+    "introLowEnergy": "It was a tiring day. {weather}",
+    "@introLowEnergy": {
+        "placeholders": {
+            "weather": {
+                "type": "String"
+            }
+        }
+    },
+    "introNeutral": "I had a calm day. {weather}",
+    "@introNeutral": {
+        "placeholders": {
+            "weather": {
+                "type": "String"
+            }
+        }
+    },
+    "healthAction": "I took care of my body: {activities}.",
+    "@healthAction": {
+        "placeholders": {
+            "activities": {
+                "type": "String"
+            }
+        }
+    },
+    "socialAction": "I spent time with loved ones: {activities}.",
+    "@socialAction": {
+        "placeholders": {
+            "activities": {
+                "type": "String"
+            }
+        }
+    },
+    "hobbyAction": "I improved myself and had fun: {activities}.",
+    "@hobbyAction": {
+        "placeholders": {
+            "activities": {
+                "type": "String"
+            }
+        }
+    },
+    "choreAction": "I handled my responsibilities: {activities}.",
+    "@choreAction": {
+        "placeholders": {
+            "activities": {
+                "type": "String"
+            }
+        }
+    },
+    "selfCareAction": "I pampered myself: {activities}.",
+    "@selfCareAction": {
+        "placeholders": {
+            "activities": {
+                "type": "String"
+            }
+        }
+    },
+    "streakBonus": "I am amazing, I reached my goals! 🚀",
+    "@streakBonus": {},
+    "streakSpecific": "Successfully continued my {activity} goal for day {count}! 🔥",
+    "@streakSpecific": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "activity": {
+                "type": "String"
+            }
+        }
+    },
+    "dayNote": "Note of the day: {note}",
+    "journal_sport": "I energized my body and worked up a sweat with sports today.",
+    "journal_healthy_food": "I took care of my body and ate healthy food.",
+    "journal_fast_food": "I treated myself to a fast food cheat meal today.",
+    "journal_water": "I refreshed my body by drinking plenty of water.",
+    "journal_walking": "I cleared my mind with a nice walk.",
+    "journal_vitamins": "I supported my immunity by taking my vitamins.",
+    "journal_sleep_health": "I saved energy by getting extra sleep today.",
+    "journal_doctor": "I didn't neglect my health and went for a doctor's check-up.",
+    "journal_friends": "I met up with friends and had a great time.",
+    "journal_family": "I enjoyed the peace of spending time with my family.",
+    "journal_party": "I joined a party and enjoyed the fun!",
+    "journal_partner": "I shared romantic and special moments with my partner.",
+    "journal_guests": "I enjoyed the pleasure of hosting guests in my home.",
+    "journal_colleagues": "I spent productive time with my colleagues.",
+    "journal_travel": "I hit the road and felt the freedom of traveling.",
+    "journal_volunteer": "I nourished my soul by participating in volunteer work.",
+    "journal_gaming": "I relieved the day's stress by diving into the world of games.",
+    "journal_reading": "I got lost among the pages of my book.",
+    "journal_movie": "I enjoyed watching a nice movie/series.",
+    "journal_art": "I expressed my inner creativity by engaging in art.",
+    "journal_music": "I got carried away by the rhythm of music and rested my soul.",
+    "journal_coding": "I experienced the pleasure of building new things by coding.",
+    "journal_photography": "I captured life through my lens and took photos.",
+    "journal_crafts": "I spent a productive day dealing with handicrafts.",
+    "journal_cleaning": "I cleaned the house and created a spacious living space.",
+    "journal_shopping": "I went shopping and completed my deficiencies.",
+    "journal_laundry": "I washed the laundry and provided order.",
+    "journal_cooking": "I went into the kitchen and prepared delicious meals.",
+    "journal_ironing": "I ironed my clothes and made them look sharp.",
+    "journal_dishes": "I handled the dishes and left the kitchen spotless.",
+    "journal_repair": "I handled small repair jobs at home.",
+    "journal_plants": "I took care of my plants and gave them life water.",
+    "journal_manicure": "I applied care to my hands by having a manicure.",
+    "journal_skincare": "I pampered myself by applying my skincare routine.",
+    "journal_hair": "I cared for my hair and felt renewed.",
+    "journal_massage": "I relaxed all my muscles with a massage.",
+    "journal_facemask": "I revitalized my skin by applying a face mask.",
+    "journal_bath": "I threw off all my tiredness with a hot bath.",
+    "journal_digital_detox": "I moved away from technology and stayed alone with myself.",
+    "journal_no_smoking": "I did a favor to my lungs by not smoking today.",
+    "journal_social_media_detox": "I enjoyed the moment by staying away from social media.",
+    "journal_read_book": "I successfully completed my daily book reading goal.",
+    "journal_drink_water": "I met my water drinking goal, hydration complete!",
+    "journal_meditation": "I focused on my inner peace by meditating.",
+    "journal_early_rise": "I caught the day by waking up before the sun.",
+    "journal_no_sugar": "I preserved my will by eating sugar-free.",
+    "journal_journaling": "I poured my feelings onto paper by writing in my journal.",
+    "journal_10k_steps": "I passed 10 thousand steps, I reached the goal!",
+    "mood_sentence_huzun": "I felt a sadness that was hard to describe.",
+    "mood_sentence_nese": "I was bubbling with joy and energy!",
+    "mood_sentence_nostaljik": "Memories came flooding back; I felt nostalgic.",
+    "mood_sentence_sinirli": "I was feeling tense and a bit on edge.",
+    "mood_sentence_umut": "A beautiful hope for the future blossomed within me.",
+    "mood_sentence_huzur": "I was in a calm, serene, and peaceful state of mind.",
+    "mood_sentence_romantik": "Romantic winds were blowing in my heart.",
+    "mood_sentence_yorgun": "I felt a bit tired and worn out throughout the day.",
+    "sleep_good": "Also, I had a great sleep.",
+    "sleep_bad": "However, I didn't sleep very well.",
+    "weather_context": "The weather was {weather}.",
+    "weather_sentence_sunny": "The warm energy of the sun accompanied my day.",
+    "weather_sentence_cloudy": "The sky was cloudy; a calm and serene atmosphere prevailed.",
+    "weather_sentence_rainy": "The sound of rain rested my soul as drops washed the city.",
+    "weather_sentence_snowy": "Falling snow covered everything like a white fairytale.",
     "msgError": "An error occurred",
     "@msgError": {},
     "msgFieldRequired": "Please fill all fields",
@@ -472,6 +613,26 @@
     "@weatherCloudy": {},
     "weatherSnowy": "Snowy",
     "@weatherSnowy": {},
+    "weatherWindy": "Windy",
+    "@weatherWindy": {},
+    "weatherFoggy": "Foggy",
+    "@weatherFoggy": {},
+    "weatherHail": "Hail",
+    "@weatherHail": {},
+    "weatherSentenceSunny": "The warmth and energy of the sun reflected on my entire day.",
+    "@weatherSentenceSunny": {},
+    "weatherSentenceRainy": "The sound and peace of the rain accompanied my day.",
+    "@weatherSentenceRainy": {},
+    "weatherSentenceCloudy": "Beams of light filtering through the clouds added serenity to my day.",
+    "@weatherSentenceCloudy": {},
+    "weatherSentenceSnowy": "The whiteness of the falling snow brought pure peace to my day.",
+    "@weatherSentenceSnowy": {},
+    "weatherSentenceWindy": "The energy and howl of the wind accompanied my day.",
+    "@weatherSentenceWindy": {},
+    "weatherSentenceFoggy": "The fog descending on the city added a mysterious vibe to my day.",
+    "@weatherSentenceFoggy": {},
+    "weatherSentenceHail": "The sudden hail added excitement and action to my day.",
+    "@weatherSentenceHail": {},
     "sectionNotesMedia": "Notes & Media",
     "@sectionNotesMedia": {},
     "notesHint": "Notes for today...",

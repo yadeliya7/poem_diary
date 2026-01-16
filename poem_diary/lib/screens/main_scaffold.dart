@@ -4,7 +4,7 @@ import 'package:line_icons/line_icons.dart';
 
 import 'home_tab.dart';
 import 'mood_calendar_screen.dart';
-import 'library_screen.dart';
+import 'journal_screen.dart';
 
 import 'analysis_screen.dart';
 
@@ -22,7 +22,7 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   final List<Widget> _widgetOptions = <Widget>[
     const HomeTab(), // Index 0: Akış (Home)
-    const LibraryScreen(), // Index 1: Kitaplık
+    const JournalScreen(), // Index 1: Günlük (Journal)
     const MoodCalendarScreen(), // Index 2: Takvim
     const AnalysisScreen(), // Index 3: Analiz
     const ProfileScreen(), // Index 4: Profil

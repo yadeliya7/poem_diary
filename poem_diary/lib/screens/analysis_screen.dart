@@ -8,6 +8,7 @@ import 'package:poem_diary/l10n/app_localizations.dart';
 import '../core/providers.dart';
 import '../models/daily_entry_model.dart';
 import 'package:intl/intl.dart';
+import '../core/language_provider.dart';
 
 class AnalysisScreen extends StatelessWidget {
   const AnalysisScreen({super.key});
@@ -201,7 +202,9 @@ class AnalysisScreen extends StatelessWidget {
                       child: Text(
                         DateFormat(
                           'E',
-                          'tr',
+                          Provider.of<LanguageProvider>(
+                            context,
+                          ).currentLanguage,
                         ).format(data[index].date), // Pzt, Sal
                         style: GoogleFonts.nunito(
                           fontSize: 12,

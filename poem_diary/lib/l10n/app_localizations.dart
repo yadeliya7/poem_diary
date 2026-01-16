@@ -323,7 +323,7 @@ abstract class AppLocalizations {
   /// No description provided for @tabLibrary.
   ///
   /// In en, this message translates to:
-  /// **'Library'**
+  /// **'Journal'**
   String get tabLibrary;
 
   /// No description provided for @tabCalendar.
@@ -391,6 +391,450 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved successfully'**
   String get msgSaved;
+
+  /// No description provided for @introHighEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'My energy was great today! {weather}'**
+  String introHighEnergy(String weather);
+
+  /// No description provided for @introLowEnergy.
+  ///
+  /// In en, this message translates to:
+  /// **'It was a tiring day. {weather}'**
+  String introLowEnergy(String weather);
+
+  /// No description provided for @introNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'I had a calm day. {weather}'**
+  String introNeutral(String weather);
+
+  /// No description provided for @healthAction.
+  ///
+  /// In en, this message translates to:
+  /// **'I took care of my body: {activities}.'**
+  String healthAction(String activities);
+
+  /// No description provided for @socialAction.
+  ///
+  /// In en, this message translates to:
+  /// **'I spent time with loved ones: {activities}.'**
+  String socialAction(String activities);
+
+  /// No description provided for @hobbyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'I improved myself and had fun: {activities}.'**
+  String hobbyAction(String activities);
+
+  /// No description provided for @choreAction.
+  ///
+  /// In en, this message translates to:
+  /// **'I handled my responsibilities: {activities}.'**
+  String choreAction(String activities);
+
+  /// No description provided for @selfCareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'I pampered myself: {activities}.'**
+  String selfCareAction(String activities);
+
+  /// No description provided for @streakBonus.
+  ///
+  /// In en, this message translates to:
+  /// **'I am amazing, I reached my goals! 🚀'**
+  String get streakBonus;
+
+  /// No description provided for @streakSpecific.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully continued my {activity} goal for day {count}! 🔥'**
+  String streakSpecific(int count, String activity);
+
+  /// No description provided for @dayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note of the day: {note}'**
+  String dayNote(Object note);
+
+  /// No description provided for @journal_sport.
+  ///
+  /// In en, this message translates to:
+  /// **'I energized my body and worked up a sweat with sports today.'**
+  String get journal_sport;
+
+  /// No description provided for @journal_healthy_food.
+  ///
+  /// In en, this message translates to:
+  /// **'I took care of my body and ate healthy food.'**
+  String get journal_healthy_food;
+
+  /// No description provided for @journal_fast_food.
+  ///
+  /// In en, this message translates to:
+  /// **'I treated myself to a fast food cheat meal today.'**
+  String get journal_fast_food;
+
+  /// No description provided for @journal_water.
+  ///
+  /// In en, this message translates to:
+  /// **'I refreshed my body by drinking plenty of water.'**
+  String get journal_water;
+
+  /// No description provided for @journal_walking.
+  ///
+  /// In en, this message translates to:
+  /// **'I cleared my mind with a nice walk.'**
+  String get journal_walking;
+
+  /// No description provided for @journal_vitamins.
+  ///
+  /// In en, this message translates to:
+  /// **'I supported my immunity by taking my vitamins.'**
+  String get journal_vitamins;
+
+  /// No description provided for @journal_sleep_health.
+  ///
+  /// In en, this message translates to:
+  /// **'I saved energy by getting extra sleep today.'**
+  String get journal_sleep_health;
+
+  /// No description provided for @journal_doctor.
+  ///
+  /// In en, this message translates to:
+  /// **'I didn\'t neglect my health and went for a doctor\'s check-up.'**
+  String get journal_doctor;
+
+  /// No description provided for @journal_friends.
+  ///
+  /// In en, this message translates to:
+  /// **'I met up with friends and had a great time.'**
+  String get journal_friends;
+
+  /// No description provided for @journal_family.
+  ///
+  /// In en, this message translates to:
+  /// **'I enjoyed the peace of spending time with my family.'**
+  String get journal_family;
+
+  /// No description provided for @journal_party.
+  ///
+  /// In en, this message translates to:
+  /// **'I joined a party and enjoyed the fun!'**
+  String get journal_party;
+
+  /// No description provided for @journal_partner.
+  ///
+  /// In en, this message translates to:
+  /// **'I shared romantic and special moments with my partner.'**
+  String get journal_partner;
+
+  /// No description provided for @journal_guests.
+  ///
+  /// In en, this message translates to:
+  /// **'I enjoyed the pleasure of hosting guests in my home.'**
+  String get journal_guests;
+
+  /// No description provided for @journal_colleagues.
+  ///
+  /// In en, this message translates to:
+  /// **'I spent productive time with my colleagues.'**
+  String get journal_colleagues;
+
+  /// No description provided for @journal_travel.
+  ///
+  /// In en, this message translates to:
+  /// **'I hit the road and felt the freedom of traveling.'**
+  String get journal_travel;
+
+  /// No description provided for @journal_volunteer.
+  ///
+  /// In en, this message translates to:
+  /// **'I nourished my soul by participating in volunteer work.'**
+  String get journal_volunteer;
+
+  /// No description provided for @journal_gaming.
+  ///
+  /// In en, this message translates to:
+  /// **'I relieved the day\'s stress by diving into the world of games.'**
+  String get journal_gaming;
+
+  /// No description provided for @journal_reading.
+  ///
+  /// In en, this message translates to:
+  /// **'I got lost among the pages of my book.'**
+  String get journal_reading;
+
+  /// No description provided for @journal_movie.
+  ///
+  /// In en, this message translates to:
+  /// **'I enjoyed watching a nice movie/series.'**
+  String get journal_movie;
+
+  /// No description provided for @journal_art.
+  ///
+  /// In en, this message translates to:
+  /// **'I expressed my inner creativity by engaging in art.'**
+  String get journal_art;
+
+  /// No description provided for @journal_music.
+  ///
+  /// In en, this message translates to:
+  /// **'I got carried away by the rhythm of music and rested my soul.'**
+  String get journal_music;
+
+  /// No description provided for @journal_coding.
+  ///
+  /// In en, this message translates to:
+  /// **'I experienced the pleasure of building new things by coding.'**
+  String get journal_coding;
+
+  /// No description provided for @journal_photography.
+  ///
+  /// In en, this message translates to:
+  /// **'I captured life through my lens and took photos.'**
+  String get journal_photography;
+
+  /// No description provided for @journal_crafts.
+  ///
+  /// In en, this message translates to:
+  /// **'I spent a productive day dealing with handicrafts.'**
+  String get journal_crafts;
+
+  /// No description provided for @journal_cleaning.
+  ///
+  /// In en, this message translates to:
+  /// **'I cleaned the house and created a spacious living space.'**
+  String get journal_cleaning;
+
+  /// No description provided for @journal_shopping.
+  ///
+  /// In en, this message translates to:
+  /// **'I went shopping and completed my deficiencies.'**
+  String get journal_shopping;
+
+  /// No description provided for @journal_laundry.
+  ///
+  /// In en, this message translates to:
+  /// **'I washed the laundry and provided order.'**
+  String get journal_laundry;
+
+  /// No description provided for @journal_cooking.
+  ///
+  /// In en, this message translates to:
+  /// **'I went into the kitchen and prepared delicious meals.'**
+  String get journal_cooking;
+
+  /// No description provided for @journal_ironing.
+  ///
+  /// In en, this message translates to:
+  /// **'I ironed my clothes and made them look sharp.'**
+  String get journal_ironing;
+
+  /// No description provided for @journal_dishes.
+  ///
+  /// In en, this message translates to:
+  /// **'I handled the dishes and left the kitchen spotless.'**
+  String get journal_dishes;
+
+  /// No description provided for @journal_repair.
+  ///
+  /// In en, this message translates to:
+  /// **'I handled small repair jobs at home.'**
+  String get journal_repair;
+
+  /// No description provided for @journal_plants.
+  ///
+  /// In en, this message translates to:
+  /// **'I took care of my plants and gave them life water.'**
+  String get journal_plants;
+
+  /// No description provided for @journal_manicure.
+  ///
+  /// In en, this message translates to:
+  /// **'I applied care to my hands by having a manicure.'**
+  String get journal_manicure;
+
+  /// No description provided for @journal_skincare.
+  ///
+  /// In en, this message translates to:
+  /// **'I pampered myself by applying my skincare routine.'**
+  String get journal_skincare;
+
+  /// No description provided for @journal_hair.
+  ///
+  /// In en, this message translates to:
+  /// **'I cared for my hair and felt renewed.'**
+  String get journal_hair;
+
+  /// No description provided for @journal_massage.
+  ///
+  /// In en, this message translates to:
+  /// **'I relaxed all my muscles with a massage.'**
+  String get journal_massage;
+
+  /// No description provided for @journal_facemask.
+  ///
+  /// In en, this message translates to:
+  /// **'I revitalized my skin by applying a face mask.'**
+  String get journal_facemask;
+
+  /// No description provided for @journal_bath.
+  ///
+  /// In en, this message translates to:
+  /// **'I threw off all my tiredness with a hot bath.'**
+  String get journal_bath;
+
+  /// No description provided for @journal_digital_detox.
+  ///
+  /// In en, this message translates to:
+  /// **'I moved away from technology and stayed alone with myself.'**
+  String get journal_digital_detox;
+
+  /// No description provided for @journal_no_smoking.
+  ///
+  /// In en, this message translates to:
+  /// **'I did a favor to my lungs by not smoking today.'**
+  String get journal_no_smoking;
+
+  /// No description provided for @journal_social_media_detox.
+  ///
+  /// In en, this message translates to:
+  /// **'I enjoyed the moment by staying away from social media.'**
+  String get journal_social_media_detox;
+
+  /// No description provided for @journal_read_book.
+  ///
+  /// In en, this message translates to:
+  /// **'I successfully completed my daily book reading goal.'**
+  String get journal_read_book;
+
+  /// No description provided for @journal_drink_water.
+  ///
+  /// In en, this message translates to:
+  /// **'I met my water drinking goal, hydration complete!'**
+  String get journal_drink_water;
+
+  /// No description provided for @journal_meditation.
+  ///
+  /// In en, this message translates to:
+  /// **'I focused on my inner peace by meditating.'**
+  String get journal_meditation;
+
+  /// No description provided for @journal_early_rise.
+  ///
+  /// In en, this message translates to:
+  /// **'I caught the day by waking up before the sun.'**
+  String get journal_early_rise;
+
+  /// No description provided for @journal_no_sugar.
+  ///
+  /// In en, this message translates to:
+  /// **'I preserved my will by eating sugar-free.'**
+  String get journal_no_sugar;
+
+  /// No description provided for @journal_journaling.
+  ///
+  /// In en, this message translates to:
+  /// **'I poured my feelings onto paper by writing in my journal.'**
+  String get journal_journaling;
+
+  /// No description provided for @journal_10k_steps.
+  ///
+  /// In en, this message translates to:
+  /// **'I passed 10 thousand steps, I reached the goal!'**
+  String get journal_10k_steps;
+
+  /// No description provided for @mood_sentence_huzun.
+  ///
+  /// In en, this message translates to:
+  /// **'I felt a sadness that was hard to describe.'**
+  String get mood_sentence_huzun;
+
+  /// No description provided for @mood_sentence_nese.
+  ///
+  /// In en, this message translates to:
+  /// **'I was bubbling with joy and energy!'**
+  String get mood_sentence_nese;
+
+  /// No description provided for @mood_sentence_nostaljik.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories came flooding back; I felt nostalgic.'**
+  String get mood_sentence_nostaljik;
+
+  /// No description provided for @mood_sentence_sinirli.
+  ///
+  /// In en, this message translates to:
+  /// **'I was feeling tense and a bit on edge.'**
+  String get mood_sentence_sinirli;
+
+  /// No description provided for @mood_sentence_umut.
+  ///
+  /// In en, this message translates to:
+  /// **'A beautiful hope for the future blossomed within me.'**
+  String get mood_sentence_umut;
+
+  /// No description provided for @mood_sentence_huzur.
+  ///
+  /// In en, this message translates to:
+  /// **'I was in a calm, serene, and peaceful state of mind.'**
+  String get mood_sentence_huzur;
+
+  /// No description provided for @mood_sentence_romantik.
+  ///
+  /// In en, this message translates to:
+  /// **'Romantic winds were blowing in my heart.'**
+  String get mood_sentence_romantik;
+
+  /// No description provided for @mood_sentence_yorgun.
+  ///
+  /// In en, this message translates to:
+  /// **'I felt a bit tired and worn out throughout the day.'**
+  String get mood_sentence_yorgun;
+
+  /// No description provided for @sleep_good.
+  ///
+  /// In en, this message translates to:
+  /// **'Also, I had a great sleep.'**
+  String get sleep_good;
+
+  /// No description provided for @sleep_bad.
+  ///
+  /// In en, this message translates to:
+  /// **'However, I didn\'t sleep very well.'**
+  String get sleep_bad;
+
+  /// No description provided for @weather_context.
+  ///
+  /// In en, this message translates to:
+  /// **'The weather was {weather}.'**
+  String weather_context(Object weather);
+
+  /// No description provided for @weather_sentence_sunny.
+  ///
+  /// In en, this message translates to:
+  /// **'The warm energy of the sun accompanied my day.'**
+  String get weather_sentence_sunny;
+
+  /// No description provided for @weather_sentence_cloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'The sky was cloudy; a calm and serene atmosphere prevailed.'**
+  String get weather_sentence_cloudy;
+
+  /// No description provided for @weather_sentence_rainy.
+  ///
+  /// In en, this message translates to:
+  /// **'The sound of rain rested my soul as drops washed the city.'**
+  String get weather_sentence_rainy;
+
+  /// No description provided for @weather_sentence_snowy.
+  ///
+  /// In en, this message translates to:
+  /// **'Falling snow covered everything like a white fairytale.'**
+  String get weather_sentence_snowy;
 
   /// No description provided for @msgError.
   ///
@@ -1375,6 +1819,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Snowy'**
   String get weatherSnowy;
+
+  /// No description provided for @weatherWindy.
+  ///
+  /// In en, this message translates to:
+  /// **'Windy'**
+  String get weatherWindy;
+
+  /// No description provided for @weatherFoggy.
+  ///
+  /// In en, this message translates to:
+  /// **'Foggy'**
+  String get weatherFoggy;
+
+  /// No description provided for @weatherHail.
+  ///
+  /// In en, this message translates to:
+  /// **'Hail'**
+  String get weatherHail;
+
+  /// No description provided for @weatherSentenceSunny.
+  ///
+  /// In en, this message translates to:
+  /// **'The warmth and energy of the sun reflected on my entire day.'**
+  String get weatherSentenceSunny;
+
+  /// No description provided for @weatherSentenceRainy.
+  ///
+  /// In en, this message translates to:
+  /// **'The sound and peace of the rain accompanied my day.'**
+  String get weatherSentenceRainy;
+
+  /// No description provided for @weatherSentenceCloudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Beams of light filtering through the clouds added serenity to my day.'**
+  String get weatherSentenceCloudy;
+
+  /// No description provided for @weatherSentenceSnowy.
+  ///
+  /// In en, this message translates to:
+  /// **'The whiteness of the falling snow brought pure peace to my day.'**
+  String get weatherSentenceSnowy;
+
+  /// No description provided for @weatherSentenceWindy.
+  ///
+  /// In en, this message translates to:
+  /// **'The energy and howl of the wind accompanied my day.'**
+  String get weatherSentenceWindy;
+
+  /// No description provided for @weatherSentenceFoggy.
+  ///
+  /// In en, this message translates to:
+  /// **'The fog descending on the city added a mysterious vibe to my day.'**
+  String get weatherSentenceFoggy;
+
+  /// No description provided for @weatherSentenceHail.
+  ///
+  /// In en, this message translates to:
+  /// **'The sudden hail added excitement and action to my day.'**
+  String get weatherSentenceHail;
 
   /// No description provided for @sectionNotesMedia.
   ///

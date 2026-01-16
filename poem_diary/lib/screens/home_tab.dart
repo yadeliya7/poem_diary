@@ -1014,6 +1014,9 @@ class _HomeTabState extends State<HomeTab> {
         'i': LineIcons.snowflake,
         'c': Colors.lightBlueAccent,
       },
+      'windy': {'l': 'Rüzgarlı', 'i': LineIcons.wind, 'c': Colors.blueGrey},
+      'foggy': {'l': 'Sisli', 'i': Icons.foggy, 'c': Colors.blueGrey},
+      'hail': {'l': 'Dolu', 'i': Icons.ac_unit, 'c': Colors.lightBlueAccent},
 
       // Health
       'sport': {'l': 'Spor', 'i': LineIcons.running, 'c': Colors.green},
