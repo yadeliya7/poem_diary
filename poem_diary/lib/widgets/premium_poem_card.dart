@@ -292,7 +292,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                               image: AssetImage(activeImage),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(
-                                Colors.black.withValues(alpha: 0.5),
+                                Colors.black.withValues(alpha: 0.4),
                                 BlendMode.darken,
                               ),
                             ),
@@ -713,7 +713,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                                         widget.poem.id,
                                         imagePath,
                                       );
-                                      Navigator.pop(context);
+                                      // Navigator.pop(context); // Keep menu open to show selection
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -778,7 +778,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                                         widget.poem.id,
                                         gradient.id,
                                       );
-                                      Navigator.pop(context);
+                                      // Navigator.pop(context); // Keep menu open to show selection
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(

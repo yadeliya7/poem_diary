@@ -5,8 +5,10 @@ import 'package:line_icons/line_icons.dart';
 import 'home_tab.dart';
 import 'mood_calendar_screen.dart';
 import 'library_screen.dart';
-import 'compose_poem_screen.dart';
+
 import 'analysis_screen.dart';
+
+import 'profile_screen.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -16,13 +18,14 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
-  int _selectedIndex = 1; // Default to Home
+  int _selectedIndex = 0; // Default to Home
 
   final List<Widget> _widgetOptions = <Widget>[
-    const LibraryScreen(), // Index 0: Kitaplık
-    const HomeTab(), // Index 1: Akış (Home)
+    const HomeTab(), // Index 0: Akış (Home)
+    const LibraryScreen(), // Index 1: Kitaplık
     const MoodCalendarScreen(), // Index 2: Takvim
     const AnalysisScreen(), // Index 3: Analiz
+    const ProfileScreen(), // Index 4: Profil
   ];
 
   void _onItemTapped(int index) {
@@ -70,37 +73,24 @@ class _MainScaffoldState extends State<MainScaffold> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildNavItem(Icons.bookmarks, 0),
-                  _buildNavItem(Icons.home_filled, 1),
+                  _buildNavItem(Icons.home_filled, 0),
+                  _buildNavItem(LineIcons.book, 1),
                   _buildNavItem(Icons.calendar_month, 2),
                   _buildNavItem(LineIcons.pieChart, 3),
+                  _buildNavItem(LineIcons.user, 4),
                 ],
               ),
             ),
           ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Open ComposePoemScreen with a nice transition
-          // Open ComposePoemScreen with a nice transition
-          Navigator.of(context).push(
-            PageRouteBuilder(
-              transitionDuration: const Duration(milliseconds: 300),
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  const ComposePoemScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-            ),
-          );
-        },
-        backgroundColor: Colors.orangeAccent,
-        elevation: 4, // distinct accent
-        child: const Icon(Icons.edit, color: Colors.white),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () { ... },
+      //   ...
+      // ),
+      // Removed global FAB as per request
+
       // Depending on layout, we might want centerDocked, but simpler is safer first.
       // If we used a notched shape, we'd need BottomAppBar.
       // Standard FAB is fine.

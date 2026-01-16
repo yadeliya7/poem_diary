@@ -43,10 +43,30 @@ class PoemProvider extends ChangeNotifier {
       _poems = [];
       for (int i = 0; i < data.length; i++) {
         final item = data[i];
-        // Calculate background image sequentially (1-6) using index
+        // Calculate background image sequentially (1-9) using index
         // Using "bg_X.jpg" format
-        final bgIndex = (i % 6) + 1;
+        final bgIndex = (i % 9) + 1;
         final String assignedBg = 'assets/images/bg_$bgIndex.jpg';
+
+        // Derive tags from mood for filtering
+        String derivedTag = 'genel';
+        String jsonMood = item['mood']?.toString() ?? '';
+        if (jsonMood == 'sad')
+          derivedTag = 'huzun';
+        else if (jsonMood == 'romantic')
+          derivedTag = 'ask';
+        else if (jsonMood == 'hopeful')
+          derivedTag = 'umut';
+        else if (jsonMood == 'tired')
+          derivedTag = 'sakinlik';
+        else if (jsonMood == 'peaceful')
+          derivedTag = 'huzur';
+        else if (jsonMood == 'nostalgic')
+          derivedTag = 'ozlem';
+        else if (jsonMood == 'mystic')
+          derivedTag = 'mistik';
+        else if (jsonMood == 'happy')
+          derivedTag = 'neşe'; // Optional mapping
 
         _poems.add(
           Poem(
@@ -58,6 +78,7 @@ class PoemProvider extends ChangeNotifier {
             createdAt: DateTime.now(), // Date is dynamic
             backgroundImage: assignedBg,
             isFavorite: savedFavs.contains(item['id']),
+            tags: [derivedTag], // Auto-tagging
           ),
         );
       }
@@ -160,6 +181,75 @@ class PoemProvider extends ChangeNotifier {
     if (moodCode.isEmpty) return _poems;
     // Simple filter by mood string
     return _poems.where((p) => p.mood == moodCode).toList();
+  }
+
+  // Helper to get custom title and tag matching for a given mood ID
+  Map<String, String> getDetailsForMood(String moodId) {
+    switch (moodId) {
+      case 'sad':
+        return {'tag': 'huzun', 'message': 'Ruhuna şifa olacak satırlar...'};
+      case 'romantic':
+        return {'tag': 'ask', 'message': 'Kalbinin sesine tercüman...'};
+      case 'hopeful':
+        return {'tag': 'umut', 'message': 'Güneş yeniden doğacak...'};
+      case 'tired':
+        return {
+          'tag': 'sakinlik',
+          'message': 'Biraz durup nefes alman için...',
+        };
+      case 'mystic':
+        return {'tag': 'mistik', 'message': 'Görünenin ötesine...'};
+      case 'peaceful':
+        return {'tag': 'huzur', 'message': 'Sessizliğin içindeki müzik...'};
+      case 'nostalgic':
+        return {'tag': 'ozlem', 'message': 'Eski güzel günlerin hatırına...'};
+      default:
+        return {'tag': 'genel', 'message': 'Günün Şiiri'};
+    }
+  }
+
+  // Get a random poem filtered by the tag associated with the mood
+  Poem getPoemForMood(String moodId) {
+    if (_poems.isEmpty) {
+      // Return a placeholder if absolutely no data
+      return Poem(
+        id: 'placeholder',
+        title: 'Yükleniyor',
+        content: '...',
+        author: '',
+        mood: '',
+        createdAt: DateTime.now(),
+      );
+    }
+
+    final details = getDetailsForMood(moodId);
+    final targetTag = details['tag'];
+
+    // Filter by tag
+    final filtered = _poems.where((p) => p.tags.contains(targetTag)).toList();
+
+    if (filtered.isNotEmpty) {
+      // Pick random from filtered
+      return filtered[Random().nextInt(filtered.length)];
+    }
+
+    // Fallback: Pick random from all poems
+    return _poems[Random().nextInt(_poems.length)];
+  }
+
+  // Get a completely random poem from the entire archive
+  Poem getRandomPoem() {
+    if (_poems.isEmpty) {
+      return Poem(
+        id: 'placeholder',
+        title: 'Yükleniyor',
+        content: '...',
+        author: '',
+        mood: '',
+        createdAt: DateTime.now(),
+      );
+    }
+    return _poems[Random().nextInt(_poems.length)];
   }
 
   // Helper to find a poem by ID (checks both stock and user poems)
@@ -272,6 +362,7 @@ class PoemProvider extends ChangeNotifier {
 
   void deletePoem(String poemId) {
     _poems.removeWhere((p) => p.id == poemId);
+    _userPoems.removeWhere((p) => p.id == poemId);
     notifyListeners();
   }
 }
@@ -279,15 +370,53 @@ class PoemProvider extends ChangeNotifier {
 class MoodProvider extends ChangeNotifier {
   // Changed from Map<String, String> to Map<String, DailyEntry>
   final Map<String, DailyEntry> _journal = {};
+  int _goalDuration = 7; // Default 7 days
+  String _userName = "Misafir Kullanıcı";
+  String _userTitle = "Şiir Tutkunu";
+  String? _profileImagePath;
 
   MoodProvider() {
     _loadJournal();
   }
 
   Map<String, DailyEntry> get journal => _journal;
+  int get goalDuration => _goalDuration;
+  String get userName => _userName;
+  String get userTitle => _userTitle;
+  String? get profileImagePath => _profileImagePath;
+
+  Future<void> setGoalDuration(int days) async {
+    _goalDuration = days;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('goal_duration', days);
+  }
+
+  Future<void> updateUserProfile(
+    String name,
+    String title,
+    String? imagePath,
+  ) async {
+    _userName = name;
+    _userTitle = title;
+    _profileImagePath = imagePath;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_name', name);
+    await prefs.setString('user_title', title);
+    if (imagePath != null) {
+      await prefs.setString('user_image', imagePath);
+    } else {
+      await prefs.remove('user_image');
+    }
+  }
 
   void _loadJournal() async {
     final prefs = await SharedPreferences.getInstance();
+    _goalDuration = prefs.getInt('goal_duration') ?? 7;
+    _userName = prefs.getString('user_name') ?? "Misafir Kullanıcı";
+    _userTitle = prefs.getString('user_title') ?? "Şiir Tutkunu";
+    _profileImagePath = prefs.getString('user_image');
 
     // Legacy migration: Check for old 'mood_history'
     if (prefs.containsKey('mood_history')) {
@@ -389,29 +518,22 @@ class MoodProvider extends ChangeNotifier {
   /// Returns the number of consecutive days the habit was present ('true').
   int getStreakFor(String habitKey, DateTime currentDate) {
     int streak = 0;
-    // Start checking from yesterday relative to the given date
-    // (We consider the streak based on history, not including "today" if partially done)
-    // However, if the user asks for "Streak Including Today", logic might vary.
-    // Standard habit trackers usually count consecutive past days + today if done.
-    // Let's count BACKWARDS from yesterday.
+    // Streak limit based on user setting
+    // If limit is 30 (Master Mode), we treat it as infinite (no cap).
+    final int limit = _goalDuration == 30 ? 999999 : _goalDuration;
 
     DateTime checkDate = currentDate.subtract(const Duration(days: 1));
 
-    while (true) {
+    while (streak < limit) {
       final String dateString =
           "${checkDate.year}-${checkDate.month.toString().padLeft(2, '0')}-${checkDate.day.toString().padLeft(2, '0')}";
 
       final entry = _journal[dateString];
 
-      // If no entry exists for this day, or the habit wasn't done, break.
       if (entry == null) {
         break;
       }
 
-      // Check habit usage
-      // We assume habit values are stored as boolean 'true' or just exist.
-      // But wait! Previous logic stored 'int' for counters.
-      // This new logic expects booleans.
       final val = entry.activities[habitKey];
       if (val == true) {
         streak++;
@@ -420,7 +542,7 @@ class MoodProvider extends ChangeNotifier {
         break;
       }
     }
-    return streak;
+    return streak; // Will never exceed limit
   }
 
   final List<MoodCategory> _moods = [

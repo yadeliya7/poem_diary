@@ -12,6 +12,7 @@ class Poem {
   final String? gradientId;
   final bool isFavorite;
   final List<String> mediaPaths;
+  final List<String> tags; // Added for mood-based filtering
 
   Poem({
     required this.id,
@@ -20,10 +21,11 @@ class Poem {
     required this.author,
     required this.mood,
     required this.createdAt,
-    this.backgroundImage = '', // Default to empty, will be assigned by Provider
+    this.backgroundImage = '',
     this.gradientId,
     this.isFavorite = false,
     this.mediaPaths = const [],
+    this.tags = const [],
   });
 
   // Favori durumunu güncellemek için kopya oluşturma metodu
@@ -37,8 +39,9 @@ class Poem {
     String? backgroundImage,
     String? gradientId,
     bool? isFavorite,
-    bool clearGradient = false, // Added to allow clearing gradient
+    bool clearGradient = false,
     List<String>? mediaPaths,
+    List<String>? tags,
   }) {
     return Poem(
       id: id ?? this.id,
@@ -51,6 +54,7 @@ class Poem {
       gradientId: clearGradient ? null : (gradientId ?? this.gradientId),
       isFavorite: isFavorite ?? this.isFavorite,
       mediaPaths: mediaPaths ?? this.mediaPaths,
+      tags: tags ?? this.tags,
     );
   }
 
@@ -71,6 +75,9 @@ class Poem {
               ?.map((e) => e as String)
               .toList() ??
           [],
+      tags:
+          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+          [],
     );
   }
 
@@ -86,6 +93,7 @@ class Poem {
       'createdAt': createdAt.toIso8601String(),
       'isFavorite': isFavorite,
       'mediaPaths': mediaPaths,
+      'tags': tags,
     };
   }
 }

@@ -119,6 +119,34 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
     });
   }
 
+  // MISSING METHODS ADDED HERE
+  Future<void> _pickMedia() async {
+    final picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      if (selectedMedia.length >= 5) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('En fazla 5 fotoğraf ekleyebilirsiniz.'),
+            ),
+          );
+        }
+        return;
+      }
+      setState(() {
+        selectedMedia.add(image.path);
+      });
+    }
+  }
+
+  void _removeMedia(int index) {
+    setState(() {
+      selectedMedia.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -211,6 +239,31 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                           'health',
                           'water',
                         ),
+                        // New Items
+                        _buildFilterChip(
+                          'Yürüyüş',
+                          LineIcons.walking,
+                          'health',
+                          'walking',
+                        ),
+                        _buildFilterChip(
+                          'Vitamin',
+                          LineIcons.pills,
+                          'health',
+                          'vitamins',
+                        ),
+                        _buildFilterChip(
+                          'Uyku',
+                          LineIcons.bed,
+                          'health',
+                          'sleep_health',
+                        ),
+                        _buildFilterChip(
+                          'Doktor',
+                          LineIcons.stethoscope,
+                          'health',
+                          'doctor',
+                        ),
                       ],
                     ),
 
@@ -245,6 +298,31 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                           LineIcons.heartAlt,
                           'social',
                           'partner',
+                        ),
+                        // New Items
+                        _buildFilterChip(
+                          'Misafir',
+                          Icons.people_outline,
+                          'social',
+                          'guests',
+                        ),
+                        _buildFilterChip(
+                          'İş Ark.',
+                          LineIcons.briefcase,
+                          'social',
+                          'colleagues',
+                        ),
+                        _buildFilterChip(
+                          'Seyahat',
+                          LineIcons.plane,
+                          'social',
+                          'travel',
+                        ),
+                        _buildFilterChip(
+                          'Gönüllü',
+                          LineIcons.heart,
+                          'social',
+                          'volunteer',
                         ),
                       ],
                     ),
@@ -281,6 +359,31 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                           'hobbies',
                           'art',
                         ),
+                        // New Items
+                        _buildFilterChip(
+                          'Müzik',
+                          LineIcons.music,
+                          'hobbies',
+                          'music',
+                        ),
+                        _buildFilterChip(
+                          'Kodlama',
+                          LineIcons.code,
+                          'hobbies',
+                          'coding',
+                        ),
+                        _buildFilterChip(
+                          'Fotoğraf',
+                          LineIcons.camera,
+                          'hobbies',
+                          'photography',
+                        ),
+                        _buildFilterChip(
+                          'El İşi',
+                          LineIcons.brush,
+                          'hobbies',
+                          'crafts',
+                        ),
                       ],
                     ),
 
@@ -316,6 +419,31 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                           'chores',
                           'cooking',
                         ),
+                        // New Items
+                        _buildFilterChip(
+                          'Ütü',
+                          Icons.iron,
+                          'chores',
+                          'ironing',
+                        ),
+                        _buildFilterChip(
+                          'Bulaşık',
+                          Icons.kitchen,
+                          'chores',
+                          'dishes',
+                        ),
+                        _buildFilterChip(
+                          'Tamirat',
+                          LineIcons.tools,
+                          'chores',
+                          'repair',
+                        ),
+                        _buildFilterChip(
+                          'Bitkiler',
+                          LineIcons.leaf,
+                          'chores',
+                          'plants',
+                        ),
                       ],
                     ),
 
@@ -344,6 +472,31 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                           LineIcons.cut,
                           'selfcare',
                           'hair',
+                        ),
+                        // New Items
+                        _buildFilterChip(
+                          'Masaj',
+                          Icons.spa,
+                          'selfcare',
+                          'massage',
+                        ),
+                        _buildFilterChip(
+                          'Maske',
+                          Icons.face,
+                          'selfcare',
+                          'facemask',
+                        ),
+                        _buildFilterChip(
+                          'Banyo',
+                          LineIcons.bath,
+                          'selfcare',
+                          'bath',
+                        ),
+                        _buildFilterChip(
+                          'Detoks',
+                          Icons.phonelink_off,
+                          'selfcare',
+                          'digital_detox',
                         ),
                       ],
                     ),
@@ -405,6 +558,19 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     _buildHabitTile('Kitap Oku', LineIcons.book, 'read_book'),
                     _buildHabitTile('Su İç', LineIcons.tint, 'drink_water'),
                     _buildHabitTile('Meditasyon', LineIcons.spa, 'meditation'),
+                    // New Goal Items
+                    _buildHabitTile('Erken Kalk', LineIcons.bell, 'early_rise'),
+                    _buildHabitTile('Şekersiz', Icons.no_food, 'no_sugar'),
+                    _buildHabitTile(
+                      'Günlük Tut',
+                      LineIcons.bookOpen,
+                      'journaling',
+                    ),
+                    _buildHabitTile(
+                      '10 Bin Adım',
+                      LineIcons.shoePrints,
+                      '10k_steps',
+                    ),
 
                     const Divider(height: 32),
 
@@ -769,7 +935,9 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                 color: isDone ? Colors.green : Colors.transparent,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isDone ? Colors.green : Colors.grey.withOpacity(0.4),
+                  color: isDone
+                      ? Colors.green
+                      : Colors.grey.withValues(alpha: 0.4),
                   width: 2,
                 ),
               ),
@@ -806,11 +974,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedMedia.removeAt(index);
-                        });
-                      },
+                      onTap: () => _removeMedia(index),
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: const BoxDecoration(
@@ -829,39 +993,33 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
               },
             ),
           ),
-
         const SizedBox(height: 12),
-
         InkWell(
-          onTap: () async {
-            try {
-              final picker = ImagePicker();
-              final List<XFile> medias = await picker.pickMultipleMedia();
-              if (medias.isNotEmpty) {
-                setState(() {
-                  selectedMedia.addAll(medias.map((m) => m.path));
-                });
-              }
-            } catch (e) {
-              // Ignore
-            }
-          },
+          onTap: _pickMedia,
+          borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.05)
+                  : Colors.grey[200],
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Colors.grey.withValues(alpha: 0.3),
+                color: isDark ? Colors.white24 : Colors.grey[300]!,
+                width: 1,
                 style: BorderStyle.solid,
               ),
-              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.add_a_photo, color: Theme.of(context).primaryColor),
+                Icon(
+                  Icons.add_photo_alternate,
+                  color: Theme.of(context).primaryColor,
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  'Fotoğraf / Video Ekle',
+                  'Fotoğraf Ekle', // Localize later if needed
                   style: GoogleFonts.nunito(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,
@@ -975,6 +1133,8 @@ Color _getMoodColor(String moodCode) {
       return Colors.cyan[300]!;
     case 'nostalgic':
       return Colors.orange[300]!;
+    case 'angry':
+      return Colors.redAccent;
     default:
       return Colors.blueGrey[200]!;
   }

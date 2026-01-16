@@ -10,9 +10,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:poem_diary/main.dart';
 
 void main() {
-  testWidgets('Poem Diary App loads', (WidgetTester tester) async {
+  testWidgets('Habitual App loads', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const PoemDiaryApp());
+    await tester.pumpWidget(const PoemDiaryApp(isSetupDone: true));
 
     // Verify that app loads without errors
     expect(find.byType(PoemDiaryApp), findsOneWidget);

@@ -62,6 +62,7 @@ class AnalysisScreen extends StatelessWidget {
               "En Sık Yapılan Aktiviteler",
               _buildActivityList(entries, isDark),
               isDark,
+              onSeeAll: () => _showAllActivitiesModal(context, entries, isDark),
             ),
             // Bottom padding for nav bar
             const SizedBox(height: 100),
@@ -75,8 +76,9 @@ class AnalysisScreen extends StatelessWidget {
     BuildContext context,
     String title,
     Widget content,
-    bool isDark,
-  ) {
+    bool isDark, {
+    VoidCallback? onSeeAll,
+  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -93,13 +95,35 @@ class AnalysisScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: GoogleFonts.nunito(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black87,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.nunito(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+              if (onSeeAll != null)
+                TextButton(
+                  onPressed: onSeeAll,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    "Tümünü Gör",
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 20),
           content,
@@ -367,6 +391,254 @@ class AnalysisScreen extends StatelessWidget {
     );
   }
 
+  // --- SHOW ALL ACTIVITIES MODAL ---
+  void _showAllActivitiesModal(
+    BuildContext context,
+    List<DailyEntry> data,
+    bool isDark,
+  ) {
+    // 1. Calculate Counts (Same logic as _buildActivityList)
+    final Map<String, int> counts = {};
+
+    for (var e in data) {
+      e.activities.forEach((key, value) {
+        if (key == 'sleep' || key == 'weather') return; // Skip
+
+        if (value == true) {
+          counts[key] = (counts[key] ?? 0) + 1;
+        } else if (value is List) {
+          for (var item in value) {
+            counts[item.toString()] = (counts[item.toString()] ?? 0) + 1;
+          }
+        }
+      });
+    }
+
+    // 2. Sort
+    final sortedKeys = counts.keys.toList()
+      ..sort((a, b) => counts[b]!.compareTo(counts[a]!));
+
+    final maxCount = sortedKeys.isNotEmpty ? counts[sortedKeys.first]! : 0;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Tüm Aktiviteler",
+                      style: GoogleFonts.nunito(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: Icon(
+                        Icons.close,
+                        color: isDark ? Colors.white70 : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+
+              // List
+              Expanded(
+                child: sortedKeys.isEmpty
+                    ? Center(
+                        child: Text(
+                          "Henüz aktivite yok",
+                          style: GoogleFonts.nunito(color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: sortedKeys.length,
+                        itemBuilder: (context, index) {
+                          final key = sortedKeys[index];
+                          final count = counts[key]!;
+
+                          // --- LOCALIZATION MAP ---
+                          final Map<String, String> labels = {
+                            // Habits
+                            'drink_water': 'Su İçme',
+                            'journaling': 'Günlük Tutma',
+                            'early_rise': 'Erken Kalkma',
+                            'no_sugar': 'Şekersiz',
+                            '10k_steps': '10.000 Adım',
+                            'read_book': 'Kitap Okuma',
+                            'meditation': 'Meditasyon',
+                            'no_smoking': 'Sigarayı Bırakma',
+                            'social_media_detox': 'Sosyal Medya Diyeti',
+                            // Health
+                            'sport': 'Spor',
+                            'walking': 'Yürüyüş',
+                            'healthy_food': 'Sağlıklı Beslenme',
+                            'fast_food': 'Fast Food',
+                            'water': 'Su',
+                            'vitamins': 'Vitamin',
+                            'sleep_health': 'Uyku Düzeni',
+                            'doctor': 'Doktor',
+                            // Social
+                            'friends': 'Arkadaşlar',
+                            'family': 'Aile',
+                            'party': 'Parti',
+                            'partner': 'Partner',
+                            'guests': 'Misafir',
+                            'colleagues': 'İş Arkadaşları',
+                            'travel': 'Seyahat',
+                            'volunteer': 'Gönüllü',
+                            // Hobbies
+                            'gaming': 'Oyun',
+                            'reading': 'Kitap',
+                            'movie': 'Film/Dizi',
+                            'art': 'Sanat',
+                            'music': 'Müzik',
+                            'coding': 'Kodlama',
+                            'photography': 'Fotoğraf',
+                            'crafts': 'El İşi',
+                            // Chores
+                            'cleaning': 'Temizlik',
+                            'shopping': 'Alışveriş',
+                            'laundry': 'Çamaşır',
+                            'cooking': 'Yemek',
+                            'ironing': 'Ütü',
+                            'dishes': 'Bulaşık',
+                            'repair': 'Tamirat',
+                            'plants': 'Bitkiler',
+                            // Self Care
+                            'manicure': 'Manikür',
+                            'skincare': 'Cilt Bakımı',
+                            'hair': 'Saç Bakımı',
+                            'massage': 'Masaj',
+                            'facemask': 'Yüz Maskesi',
+                            'bath': 'Banyo',
+                            'digital_detox': 'Dijital Detoks',
+                            // Weather
+                            'sunny': 'Güneşli',
+                            'rainy': 'Yağmurlu',
+                            'cloudy': 'Bulutlu',
+                            'snowy': 'Karlı',
+                            // Sleep
+                            'good': 'İyi Uyku',
+                            'medium': 'Orta Uyku',
+                            'bad': 'Kötü Uyku',
+                          };
+
+                          final Map<String, IconData> icons = {
+                            // Habits
+                            'drink_water': Icons.water_drop,
+                            'journaling': Icons.book,
+                            'eary_rise': Icons
+                                .alarm, // typo fix later if needed or mapped correctly
+                            'no_sugar': Icons.no_food,
+                            '10k_steps': Icons.directions_walk,
+                            'read_book': Icons.menu_book,
+                            'meditation': Icons.self_improvement,
+                            'no_smoking': Icons.smoke_free,
+                            'social_media_detox': Icons.phonelink_erase,
+                            // Partial mapping for others - fallback to circle
+                            'sport': Icons.directions_run,
+                            'walking': Icons.directions_walk,
+                            'sunny': Icons.wb_sunny,
+                            'rainy': Icons.grain,
+                          };
+
+                          String label = labels[key] ?? key;
+                          IconData icon = icons[key] ?? Icons.circle; // Default
+                          Color color =
+                              Colors.primaries[key.hashCode %
+                                  Colors
+                                      .primaries
+                                      .length]; // Random color based on key
+                          // Add more as needed or leave generic
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: color.withOpacity(0.1),
+                                  child: Icon(icon, color: color, size: 20),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            label, // Using proper label
+                                            style: GoogleFonts.nunito(
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                          Text(
+                                            "$count kez",
+                                            style: GoogleFonts.nunito(
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Progress Bar
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: LinearProgressIndicator(
+                                          value: count / maxCount,
+                                          backgroundColor: isDark
+                                              ? Colors.white.withOpacity(0.05)
+                                              : Colors.grey.shade100,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                color,
+                                              ),
+                                          minHeight: 6,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   // --- CHART 3: TOP ACTIVITIES (LIST) ---
   Widget _buildActivityList(List<DailyEntry> data, bool isDark) {
     // Count frequencies
@@ -437,42 +709,111 @@ class AnalysisScreen extends StatelessWidget {
   }
 
   String _getHumanLabel(String key) {
-    // Basic mapping
-    final map = {
-      'no_smoking': 'Sigarasız',
+    const map = {
+      // Health
       'sport': 'Spor',
+      'healthy_food': 'Sağlıklı',
+      'fast_food': 'Fast Food',
       'water': 'Su',
-      'reading': 'Okuma',
-      'meditation': 'Meditasyon',
-      'cleaning': 'Temizlik',
-      'gaming': 'Oyun',
+      'walking': 'Yürüyüş',
+      'vitamins': 'Vitamin',
+      'sleep_health': 'Uyku',
+      'doctor': 'Doktor',
+
+      // Social
       'friends': 'Arkadaşlar',
-      'cooking': 'Yemek',
       'family': 'Aile',
       'party': 'Parti',
       'partner': 'Partner',
+      'guests': 'Misafir',
+      'colleagues': 'İş Ark.',
+      'travel': 'Seyahat',
+      'volunteer': 'Gönüllü',
+
+      // Hobbies
+      'gaming': 'Oyun',
+      'reading': 'Okuma',
       'movie': 'Film',
       'art': 'Sanat',
+      'music': 'Müzik',
+      'coding': 'Kodlama',
+      'photography': 'Fotoğraf',
+      'crafts': 'El İşi',
+
+      // Chores
+      'cleaning': 'Temizlik',
       'shopping': 'Alışveriş',
       'laundry': 'Çamaşır',
+      'cooking': 'Yemek',
+      'ironing': 'Ütü',
+      'dishes': 'Bulaşık',
+      'repair': 'Tamirat',
+      'plants': 'Bitkiler',
+
+      // Selfcare
       'manicure': 'Manikür',
       'skincare': 'Cilt Bakımı',
       'hair': 'Saç',
-      'social_media_detox': 'Detoks',
+      'massage': 'Masaj',
+      'facemask': 'Maske',
+      'bath': 'Banyo',
+      'digital_detox': 'Detoks',
+
+      // Booleans
+      'no_smoking': 'Sigara Yok',
+      'social_media_detox': 'Sosyal Medya',
+      'meditation': 'Meditasyon',
+      'read_book': 'Okuma',
+      'drink_water': 'Su',
+      'early_rise': 'Erken Kalk',
+      'no_sugar': 'Şekersiz',
+      'journaling': 'Günlük',
+      '10k_steps': '10 Bin Adım',
     };
     return map[key] ?? key;
   }
 
   Color _getColorForKey(String key) {
-    // Simple deterministic color
+    // Consistent colors with HomeTab where possible
+    const colorMap = {
+      'sport': Colors.green,
+      'walking': Colors.green,
+      'healthy_food': Colors.greenAccent,
+      'fast_food': Colors.orangeAccent,
+      'water': Colors.blueAccent,
+      'doctor': Colors.red,
+
+      'friends': Colors.purple,
+      'family': Colors.brown,
+      'party': Colors.deepPurple,
+      'partner': Colors.red,
+
+      'gaming': Colors.indigoAccent,
+      'reading': Colors.brown,
+      'movie': Colors.redAccent,
+      'art': Colors.pinkAccent,
+      'coding': Colors.teal,
+
+      'cleaning': Colors.teal,
+      'cooking': Colors.deepOrange,
+
+      'manicure': Colors.pink,
+      'skincare': Colors.lightGreen,
+    };
+
+    if (colorMap.containsKey(key)) return colorMap[key]!;
+
+    // Fallback deterministic colors
     final colors = [
-      Colors.red,
-      Colors.green,
       Colors.blue,
       Colors.orange,
       Colors.purple,
       Colors.teal,
+      Colors.pink,
+      Colors.amber,
+      Colors.cyan,
+      Colors.indigo,
     ];
-    return colors[key.length % colors.length];
+    return colors[key.hashCode.abs() % colors.length];
   }
 }

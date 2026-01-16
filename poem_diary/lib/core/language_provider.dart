@@ -198,7 +198,7 @@ class LanguageProvider extends ChangeNotifier {
       'btn_see_poems': 'See Poems',
       'msg_no_mood_poems': 'No poems for this mood yet.',
       'share_error': 'Error creating share:',
-      'app_title': 'Poem Diary',
+      'app_title': 'Habitual',
       'msg_no_poem_selected': 'No poem selected yet.',
       'created_with': 'Created with',
       'daily_goals': 'Daily Goals',

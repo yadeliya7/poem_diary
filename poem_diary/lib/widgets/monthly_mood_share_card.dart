@@ -6,17 +6,19 @@ import '../models/poem_model.dart';
 class MonthlyMoodShareCard extends StatelessWidget {
   final DateTime month;
   final Map<int, MoodCategory> dailyMoods;
+  // final Map<int, List<String>> dailyActivities; // REMOVED per user request
   final String userName; // Optional: "Yadeliya's Mood Diary"
   final Map<String, MoodCategory> moodDefinitions; // For colors/icons
   final Map<String, String> localizedLabels; // For translated names
   final String locale; // e.g. 'tr' or 'en'
-  final String footerText; // "Created with Poem Diary"
+  final String footerText; // "Created with Habitual"
 
   const MonthlyMoodShareCard({
     super.key,
     required this.month,
     required this.dailyMoods,
-    this.userName = 'Poem Diary',
+    // this.dailyActivities = const {},
+    this.userName = 'Habitual',
     required this.moodDefinitions,
     required this.localizedLabels,
     required this.locale,
@@ -25,15 +27,11 @@ class MonthlyMoodShareCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fixed dimensions for better social media sharing (e.g., Instagram Story/Post)
-    // Using a 4:5 ratio or square is usually good, but we'll let it size by content
-    // and wrap it in a container with a nice background.
-
     return Container(
-      width: 400, // Fixed width to ensure consistency in screenshots
+      width: 400, // Fixed width
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F9FA), // Clean off-white background
+        color: const Color(0xFFF8F9FA),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -78,17 +76,40 @@ class MonthlyMoodShareCard extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // 2. The Calendar Grid
-          // We need to calculate offset for the first day of the month
+          // 2. Calendar Grid
           _buildCalendarGrid(),
 
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 16),
 
-          // 3. Legend (Top used moods)
+          // 3. Mood Legend (ALL Moods)
+          Text(
+            "DUYGU DURUMU",
+            style: GoogleFonts.nunito(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 10),
           _buildLegend(),
 
+          // if (dailyActivities.isNotEmpty) ...[
+          //   const SizedBox(height: 20),
+          //   Text(
+          //     "AKTİVİTELER",
+          //     style: GoogleFonts.nunito(
+          //       fontSize: 10,
+          //       fontWeight: FontWeight.bold,
+          //       color: Colors.grey,
+          //       letterSpacing: 1.2,
+          //     ),
+          //   ),
+          //   const SizedBox(height: 10),
+          //   _buildActivityLegend(),
+          // ],
           const SizedBox(height: 24),
 
           // 4. Footer
@@ -99,8 +120,8 @@ class MonthlyMoodShareCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 locale == 'tr'
-                    ? 'Poem Diary ile oluşturuldu'
-                    : 'Created with Poem Diary',
+                    ? 'Habitual ile oluşturuldu'
+                    : 'Created with Habitual',
                 style: GoogleFonts.nunito(
                   fontSize: 12,
                   color: Colors.grey,
@@ -114,18 +135,15 @@ class MonthlyMoodShareCard extends StatelessWidget {
     );
   }
 
+  // ... _buildCalendarGrid remains same ...
+
   Widget _buildCalendarGrid() {
     // Calendar logic
     final firstDayOfMonth = DateTime(month.year, month.month, 1);
     final daysInMonth = DateUtils.getDaysInMonth(month.year, month.month);
 
     // 1 = Monday, 7 = Sunday (DateTime standard)
-    // We want Monday start? Usually calendars are Monday or Sunday.
-    // Let's assume Monday start for Turkey context usually.
     final firstWeekday = firstDayOfMonth.weekday; // 1 (Mon) to 7 (Sun)
-
-    // Calculation:
-    // Empty cells before 1st day: (firstWeekday - 1)
 
     final int offset = firstWeekday - 1;
     final int totalCells = offset + daysInMonth;
@@ -171,7 +189,6 @@ class MonthlyMoodShareCard extends StatelessWidget {
   }
 
   Widget _buildLegend() {
-    // 1. Calculate Stats
     final totalEntries = dailyMoods.length;
     if (totalEntries == 0) return const SizedBox();
 
@@ -180,18 +197,16 @@ class MonthlyMoodShareCard extends StatelessWidget {
       counts[mood.code] = (counts[mood.code] ?? 0) + 1;
     }
 
-    // 2. Sort by Percentage (Highest first)
+    // Sort: High % first
     final sortedEntries = counts.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    // 3. Take Top 4
-    final topEntries = sortedEntries.take(4).toList();
-
+    // Show ALL (No take limit)
     return Wrap(
-      spacing: 16,
-      runSpacing: 10,
+      spacing: 12,
+      runSpacing: 8,
       alignment: WrapAlignment.center,
-      children: topEntries.map((entry) {
+      children: sortedEntries.map((entry) {
         final code = entry.key;
         final count = entry.value;
         final mood = moodDefinitions[code];
@@ -202,27 +217,24 @@ class MonthlyMoodShareCard extends StatelessWidget {
 
         return IntrinsicWidth(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: mood.color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: mood.color.withValues(alpha: 0.2),
+                width: 1,
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: mood.color,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
+                Icon(Icons.circle, color: mood.color, size: 8),
+                const SizedBox(width: 6),
                 Text(
-                  "$name: %$percentage",
+                  "$name %$percentage",
                   style: GoogleFonts.nunito(
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),

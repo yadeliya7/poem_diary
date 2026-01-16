@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../core/providers.dart';
 import '../core/language_provider.dart';
 
@@ -56,7 +57,15 @@ class SettingsScreen extends StatelessWidget {
             ), // Font name usually stays same
             trailing: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
-                value: poemProvider.contentFontFamily,
+                value:
+                    [
+                      'Nunito',
+                      'Dancing Script',
+                      'Merriweather',
+                      'Lora',
+                    ].contains(poemProvider.contentFontFamily)
+                    ? poemProvider.contentFontFamily
+                    : 'Nunito',
                 dropdownColor: isDark ? Colors.grey[850] : Colors.white,
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.black,
@@ -71,7 +80,10 @@ class SettingsScreen extends StatelessWidget {
                   (String font) {
                     return DropdownMenuItem<String>(
                       value: font,
-                      child: Text(font, style: GoogleFonts.getFont(font)),
+                      child: Text(
+                        font,
+                        style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+                      ),
                     );
                   },
                 ).toList(),
@@ -84,8 +96,37 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           // Add more settings here
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.share, color: Colors.blueAccent),
+            title: Text(
+              "Arkadaşlarınla Paylaş",
+              style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
+            ),
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            onTap: () => _shareApp(context),
+          ),
         ],
       ),
     );
+  }
+
+  void _shareApp(BuildContext context) {
+    // Turkish marketing message
+    const String message =
+        "Selam! Duygu durumumu ve alışkanlıklarımı takip ettiğim bu harika uygulamayı keşfettim. "
+        "Sen de denemelisin! 🚀 Habitual\n\n"
+        "https://example.com"; // Placeholder link
+
+    // Share using share_plus
+    try {
+      Share.share(message);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Hata: $e. Lütfen uygulamayı yeniden başlatın.'),
+        ),
+      );
+    }
   }
 }

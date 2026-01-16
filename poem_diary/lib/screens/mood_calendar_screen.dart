@@ -278,6 +278,8 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
         return Colors.cyan[300]!;
       case 'nostalgic':
         return Colors.orange[300]!;
+      case 'angry':
+        return Colors.redAccent;
       default:
         return Colors.blueGrey[200]!;
     }
@@ -291,6 +293,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
     try {
       // 1. Gather Data for the Card
       final Map<int, MoodCategory> dailyMoods = {};
+
       final daysInMonth = DateUtils.getDaysInMonth(
         _focusedDay.year,
         _focusedDay.month,
@@ -301,6 +304,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
         final entry = provider.getEntryForDate(date);
 
         if (entry != null) {
+          // Mood
           final mood = provider.moods.firstWhere(
             (m) => m.code == entry.moodCode,
             orElse: () => MoodCategory(
@@ -338,7 +342,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
           moodDefinitions: definitions,
           localizedLabels: localizedLabels,
           locale: lang.currentLanguage == 'tr' ? 'tr_TR' : 'en_US',
-          footerText: "${lang.translate('created_with')} Poem Diary",
+          footerText: "${lang.translate('created_with')} Habitual",
         ),
         delay: const Duration(milliseconds: 100),
         context: context,
@@ -404,161 +408,208 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        return Container(
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header: Icon + Date
-              Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: _getMoodColor(mood.code),
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      mood.emoji,
-                      style: const TextStyle(fontSize: 32),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(30),
+              ),
+            ),
+            child: Column(
+              children: [
+                // 1. Sticky Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                  child: Row(
                     children: [
                       Text(
-                        Provider.of<LanguageProvider>(
-                          context,
-                        ).translate('mood_${mood.code}'),
+                        "Gün Detayı",
                         style: GoogleFonts.nunito(
-                          fontSize: 22,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.white : Colors.black87,
                         ),
                       ),
-                      Text(
-                        "${date.day} ${_getMonthName(date.month)} ${date.year}",
-                        style: GoogleFonts.nunito(
-                          fontSize: 16,
-                          color: Colors.grey,
+                      const Spacer(),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: isDark ? Colors.white70 : Colors.black54,
                         ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.edit,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context); // Close details
+                          showMoodEntryDialog(
+                            context,
+                            date: date,
+                            provider: provider,
+                            currentMood: moodCode,
+                            currentNote: note,
+                            currentMedia: entry?.mediaPaths ?? [],
+                            currentActivities: entry?.activities ?? {},
+                          );
+                        },
                       ),
                     ],
                   ),
-                  const Spacer(),
-                  IconButton(
-                    icon: Icon(
-                      Icons.edit,
-                      color: isDark ? Colors.white70 : Colors.black54,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context); // Close details
-                      showMoodEntryDialog(
-                        context,
-                        date: date,
-                        provider: provider,
-                        currentMood: moodCode,
-                        currentNote: note,
-                        currentMedia: entry?.mediaPaths ?? [],
-                        currentActivities: entry?.activities ?? {},
-                      );
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Activity Chips
-              if (entry != null && entry.activities.isNotEmpty)
-                Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  child: _buildWrapIcons(entry),
                 ),
+                const Divider(),
 
-              // Note Content
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.black12 : Colors.grey[100],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  note != null && note.isNotEmpty
-                      ? note
-                      : Provider.of<LanguageProvider>(
-                          context,
-                        ).translate('no_note'),
-                  style: GoogleFonts.nunito(
-                    fontSize: 16,
-                    height: 1.5,
-                    fontStyle: note != null && note.isNotEmpty
-                        ? FontStyle.normal
-                        : FontStyle.italic,
-                    color: isDark ? Colors.white70 : Colors.black87,
-                  ),
-                ),
-              ),
-
-              // Media Display
-              if (entry?.mediaPaths != null && entry!.mediaPaths.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: entry.mediaPaths.length,
-                      itemBuilder: (context, index) {
-                        final path = entry.mediaPaths[index];
-                        final ext = path.split('.').last.toLowerCase();
-                        final isImage = [
-                          'jpg',
-                          'jpeg',
-                          'png',
-                          'heic',
-                          'webp',
-                        ].contains(ext);
-
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: GestureDetector(
-                            onTap: () {
-                              if (!isImage) return;
-                              showDialog(
-                                context: context,
-                                builder: (ctx) => Dialog(
-                                  backgroundColor: Colors.transparent,
-                                  child: InteractiveViewer(
-                                    child: Image.file(File(path)),
+                // 2. Scrollable Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        // Mood Info
+                        Row(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: _getMoodColor(mood.code),
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                mood.emoji,
+                                style: const TextStyle(fontSize: 32),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  Provider.of<LanguageProvider>(
+                                    context,
+                                  ).translate('mood_${mood.code}'),
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white
+                                        : Colors.black87,
                                   ),
                                 ),
-                              );
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: buildMediaThumbnail(path),
+                                Text(
+                                  "${date.day} ${_getMonthName(date.month)} ${date.year}",
+                                  style: GoogleFonts.nunito(
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Activity Chips
+                        if (entry != null && entry.activities.isNotEmpty)
+                          Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            child: _buildWrapIcons(entry),
+                          ),
+
+                        // Note Content
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.black12 : Colors.grey[100],
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            note != null && note.isNotEmpty
+                                ? note
+                                : Provider.of<LanguageProvider>(
+                                    context,
+                                  ).translate('no_note'),
+                            style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              height: 1.5,
+                              fontStyle: note != null && note.isNotEmpty
+                                  ? FontStyle.normal
+                                  : FontStyle.italic,
+                              color: isDark ? Colors.white70 : Colors.black87,
                             ),
                           ),
-                        );
-                      },
+                        ),
+
+                        // Media Display
+                        if (entry?.mediaPaths != null &&
+                            entry!.mediaPaths.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: SizedBox(
+                              height: 100,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: entry.mediaPaths.length,
+                                itemBuilder: (context, index) {
+                                  final path = entry.mediaPaths[index];
+                                  final ext = path
+                                      .split('.')
+                                      .last
+                                      .toLowerCase();
+                                  final isImage = [
+                                    'jpg',
+                                    'jpeg',
+                                    'png',
+                                    'heic',
+                                    'webp',
+                                  ].contains(ext);
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (!isImage) return;
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) => Dialog(
+                                            backgroundColor: Colors.transparent,
+                                            child: InteractiveViewer(
+                                              child: Image.file(File(path)),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: buildMediaThumbnail(path),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 30),
+                      ],
                     ),
                   ),
                 ),
-
-              const SizedBox(height: 20),
-            ],
+              ],
+            ),
           ),
         );
       },
