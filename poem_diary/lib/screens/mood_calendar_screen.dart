@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -7,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../core/providers.dart';
 import '../core/language_provider.dart';
+import '../helpers/localization_helper.dart';
+
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,7 +44,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
       backgroundColor: bgColor, // Explicit background color
       appBar: AppBar(
         title: Text(
-          Provider.of<LanguageProvider>(context).translate('calendar_title'),
+          AppLocalizations.of(context)!.calendarTitle,
           style: GoogleFonts.nunito(
             fontWeight: FontWeight.bold,
             fontSize: 22,
@@ -83,10 +86,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            Provider.of<LanguageProvider>(
-                              context,
-                              listen: false,
-                            ).translate('future_warning'),
+                            AppLocalizations.of(context)!.futureWarning,
                             style: GoogleFonts.nunito(color: Colors.white),
                           ),
                           backgroundColor: Colors.redAccent,
@@ -217,9 +217,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              Provider.of<LanguageProvider>(
-                                context,
-                              ).translate('mood_${mood.code}'),
+                              _getMoodName(context, mood.code),
                               textAlign: TextAlign.center,
                               style: GoogleFonts.nunito(
                                 fontSize: 10,
@@ -285,6 +283,32 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
     }
   }
 
+  String _getMoodName(BuildContext context, String code) {
+    final loc = AppLocalizations.of(context)!;
+    switch (code) {
+      case 'happy':
+        return loc.moodHappy;
+      case 'sad':
+        return loc.moodSad;
+      case 'romantic':
+        return loc.moodRomantic;
+      case 'mystic':
+        return loc.moodMystic;
+      case 'tired':
+        return loc.moodTired;
+      case 'hopeful':
+        return loc.moodHopeful;
+      case 'peaceful':
+        return loc.moodPeaceful;
+      case 'nostalgic':
+        return loc.moodNostalgic;
+      case 'angry':
+        return loc.moodAngry;
+      default:
+        return code;
+    }
+  }
+
   Future<void> _shareMonth(BuildContext context) async {
     setState(() => _isSharing = true);
     final provider = Provider.of<MoodProvider>(context, listen: false);
@@ -331,7 +355,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
       // 3. Build Localized Labels
       final Map<String, String> localizedLabels = {
         for (var m in provider.moods.where((x) => x.code.isNotEmpty))
-          m.code: lang.translate('mood_${m.code}'),
+          m.code: _getMoodName(context, m.code),
       };
 
       // 4. Generate Image
@@ -342,7 +366,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
           moodDefinitions: definitions,
           localizedLabels: localizedLabels,
           locale: lang.currentLanguage == 'tr' ? 'tr_TR' : 'en_US',
-          footerText: "${lang.translate('created_with')} Habitual",
+          footerText: "${AppLocalizations.of(context)!.createdWith} Habitual",
         ),
         delay: const Duration(milliseconds: 100),
         context: context,
@@ -393,10 +417,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
       orElse: () => MoodCategory(
         id: '',
         code: '',
-        name: Provider.of<LanguageProvider>(
-          context,
-          listen: false,
-        ).translate('mood_unknown'),
+        name: AppLocalizations.of(context)!.moodUnknown,
         emoji: '❓',
         description: '',
         backgroundGradient: '',
@@ -429,7 +450,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                   child: Row(
                     children: [
                       Text(
-                        "Gün Detayı",
+                        AppLocalizations.of(context)!.dayDetail,
                         style: GoogleFonts.nunito(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -496,9 +517,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  Provider.of<LanguageProvider>(
-                                    context,
-                                  ).translate('mood_${mood.code}'),
+                                  _getMoodName(context, mood.code),
                                   style: GoogleFonts.nunito(
                                     fontSize: 22,
                                     fontWeight: FontWeight.bold,
@@ -539,9 +558,7 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
                           child: Text(
                             note != null && note.isNotEmpty
                                 ? note
-                                : Provider.of<LanguageProvider>(
-                                    context,
-                                  ).translate('no_note'),
+                                : AppLocalizations.of(context)!.noNote,
                             style: GoogleFonts.nunito(
                               fontSize: 16,
                               height: 1.5,
@@ -730,28 +747,68 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
     final act = entry.activities;
 
     if (act['sleep'] == 'good') {
-      chips.add(makeChip(LineIcons.sun, Colors.orange, 'İyi Uyku'));
+      chips.add(
+        makeChip(
+          LineIcons.sun,
+          Colors.orange,
+          LocalizationHelper.getActivityName(context, 'sleep', 'good'),
+        ),
+      );
     }
     if (act['sleep'] == 'medium') {
       chips.add(
-        makeChip(LineIcons.cloudWithMoon, Colors.blueGrey, 'Orta Uyku'),
+        makeChip(
+          LineIcons.cloudWithMoon,
+          Colors.blueGrey,
+          LocalizationHelper.getActivityName(context, 'sleep', 'medium'),
+        ),
       );
     }
     if (act['sleep'] == 'bad') {
-      chips.add(makeChip(LineIcons.moon, Colors.indigo, 'Kötü Uyku'));
+      chips.add(
+        makeChip(
+          LineIcons.moon,
+          Colors.indigo,
+          LocalizationHelper.getActivityName(context, 'sleep', 'bad'),
+        ),
+      );
     }
 
     if (act['weather'] == 'sunny') {
-      chips.add(makeChip(LineIcons.sun, Colors.amber, 'Güneşli'));
+      chips.add(
+        makeChip(
+          LineIcons.sun,
+          Colors.amber,
+          LocalizationHelper.getActivityName(context, 'weather', 'sunny'),
+        ),
+      );
     }
     if (act['weather'] == 'rainy') {
-      chips.add(makeChip(LineIcons.cloudWithRain, Colors.blue, 'Yağmurlu'));
+      chips.add(
+        makeChip(
+          LineIcons.cloudWithRain,
+          Colors.blue,
+          LocalizationHelper.getActivityName(context, 'weather', 'rainy'),
+        ),
+      );
     }
     if (act['weather'] == 'cloudy') {
-      chips.add(makeChip(LineIcons.cloud, Colors.grey, 'Bulutlu'));
+      chips.add(
+        makeChip(
+          LineIcons.cloud,
+          Colors.grey,
+          LocalizationHelper.getActivityName(context, 'weather', 'cloudy'),
+        ),
+      );
     }
     if (act['weather'] == 'snowy') {
-      chips.add(makeChip(LineIcons.snowflake, Colors.lightBlueAccent, 'Karlı'));
+      chips.add(
+        makeChip(
+          LineIcons.snowflake,
+          Colors.lightBlueAccent,
+          LocalizationHelper.getActivityName(context, 'weather', 'snowy'),
+        ),
+      );
     }
 
     // LIST HELPERS
@@ -760,81 +817,211 @@ class _MoodCalendarScreenState extends State<MoodCalendarScreen> {
 
     final health = listFrom(act['health']);
     if (health.contains('sport')) {
-      chips.add(makeChip(LineIcons.running, Colors.green, 'Spor'));
+      chips.add(
+        makeChip(
+          LineIcons.running,
+          Colors.green,
+          LocalizationHelper.getActivityName(context, 'sport'),
+        ),
+      );
     }
     if (health.contains('healthy_food')) {
-      chips.add(makeChip(LineIcons.carrot, Colors.greenAccent, 'Sağlıklı'));
+      chips.add(
+        makeChip(
+          LineIcons.carrot,
+          Colors.greenAccent,
+          LocalizationHelper.getActivityName(context, 'healthy_food'),
+        ),
+      );
     }
     if (health.contains('fast_food')) {
       chips.add(
-        makeChip(LineIcons.hamburger, Colors.orangeAccent, 'Fast Food'),
+        makeChip(
+          LineIcons.hamburger,
+          Colors.orangeAccent,
+          LocalizationHelper.getActivityName(context, 'fast_food'),
+        ),
       );
     }
     if (health.contains('water')) {
-      chips.add(makeChip(LineIcons.tint, Colors.blueAccent, 'Su'));
+      chips.add(
+        makeChip(
+          LineIcons.tint,
+          Colors.blueAccent,
+          LocalizationHelper.getActivityName(context, 'water'),
+        ),
+      );
     }
 
     final social = listFrom(act['social']);
     if (social.contains('friends')) {
-      chips.add(makeChip(LineIcons.userFriends, Colors.purple, 'Arkadaşlar'));
+      chips.add(
+        makeChip(
+          LineIcons.userFriends,
+          Colors.purple,
+          LocalizationHelper.getActivityName(context, 'friends'),
+        ),
+      );
     }
     if (social.contains('family')) {
-      chips.add(makeChip(LineIcons.home, Colors.brown, 'Aile'));
+      chips.add(
+        makeChip(
+          LineIcons.home,
+          Colors.brown,
+          LocalizationHelper.getActivityName(context, 'family'),
+        ),
+      );
     }
     if (social.contains('party')) {
-      chips.add(makeChip(LineIcons.cocktail, Colors.deepPurple, 'Parti'));
+      chips.add(
+        makeChip(
+          LineIcons.cocktail,
+          Colors.deepPurple,
+          LocalizationHelper.getActivityName(context, 'party'),
+        ),
+      );
     }
     if (social.contains('partner')) {
-      chips.add(makeChip(LineIcons.heartAlt, Colors.red, 'Partner'));
+      chips.add(
+        makeChip(
+          LineIcons.heartAlt,
+          Colors.red,
+          LocalizationHelper.getActivityName(context, 'partner'),
+        ),
+      );
     }
 
     final hobbies = listFrom(act['hobbies']);
     if (hobbies.contains('gaming')) {
-      chips.add(makeChip(LineIcons.gamepad, Colors.indigoAccent, 'Oyun'));
+      chips.add(
+        makeChip(
+          LineIcons.gamepad,
+          Colors.indigoAccent,
+          LocalizationHelper.getActivityName(context, 'gaming'),
+        ),
+      );
     }
     if (hobbies.contains('reading')) {
-      chips.add(makeChip(LineIcons.book, Colors.brown, 'Okuma'));
+      chips.add(
+        makeChip(
+          LineIcons.book,
+          Colors.brown,
+          LocalizationHelper.getActivityName(context, 'reading'),
+        ),
+      );
     }
     if (hobbies.contains('movie')) {
-      chips.add(makeChip(LineIcons.video, Colors.redAccent, 'Film'));
+      chips.add(
+        makeChip(
+          LineIcons.video,
+          Colors.redAccent,
+          LocalizationHelper.getActivityName(context, 'movie'),
+        ),
+      );
     }
     if (hobbies.contains('art')) {
-      chips.add(makeChip(LineIcons.palette, Colors.pinkAccent, 'Sanat'));
+      chips.add(
+        makeChip(
+          LineIcons.palette,
+          Colors.pinkAccent,
+          LocalizationHelper.getActivityName(context, 'art'),
+        ),
+      );
     }
 
     final chores = listFrom(act['chores']);
     if (chores.contains('cleaning')) {
-      chips.add(makeChip(LineIcons.broom, Colors.teal, 'Temizlik'));
+      chips.add(
+        makeChip(
+          LineIcons.broom,
+          Colors.teal,
+          LocalizationHelper.getActivityName(context, 'cleaning'),
+        ),
+      );
     }
     if (chores.contains('shopping')) {
-      chips.add(makeChip(LineIcons.shoppingCart, Colors.orange, 'Alışveriş'));
+      chips.add(
+        makeChip(
+          LineIcons.shoppingCart,
+          Colors.orange,
+          LocalizationHelper.getActivityName(context, 'shopping'),
+        ),
+      );
     }
     if (chores.contains('laundry')) {
-      chips.add(makeChip(LineIcons.tShirt, Colors.blueGrey, 'Çamaşır'));
+      chips.add(
+        makeChip(
+          LineIcons.tShirt,
+          Colors.blueGrey,
+          LocalizationHelper.getActivityName(context, 'laundry'),
+        ),
+      );
     }
     if (chores.contains('cooking')) {
-      chips.add(makeChip(LineIcons.utensils, Colors.deepOrange, 'Yemek'));
+      chips.add(
+        makeChip(
+          LineIcons.utensils,
+          Colors.deepOrange,
+          LocalizationHelper.getActivityName(context, 'cooking'),
+        ),
+      );
     }
 
     final selfcare = listFrom(act['selfcare']);
     if (selfcare.contains('manicure')) {
-      chips.add(makeChip(LineIcons.handHoldingHeart, Colors.pink, 'Manikür'));
+      chips.add(
+        makeChip(
+          LineIcons.handHoldingHeart,
+          Colors.pink,
+          LocalizationHelper.getActivityName(context, 'manicure'),
+        ),
+      );
     }
     if (selfcare.contains('skincare')) {
-      chips.add(makeChip(LineIcons.spa, Colors.lightGreen, 'Cilt Bakımı'));
+      chips.add(
+        makeChip(
+          LineIcons.spa,
+          Colors.lightGreen,
+          LocalizationHelper.getActivityName(context, 'skincare'),
+        ),
+      );
     }
     if (selfcare.contains('hair')) {
-      chips.add(makeChip(LineIcons.cut, Colors.brown, 'Saç'));
+      chips.add(
+        makeChip(
+          LineIcons.cut,
+          Colors.brown,
+          LocalizationHelper.getActivityName(context, 'hair'),
+        ),
+      );
     }
 
     if (act['no_smoking'] == true) {
-      chips.add(makeChip(LineIcons.smokingBan, Colors.redAccent, 'Sigara Yok'));
+      chips.add(
+        makeChip(
+          LineIcons.smokingBan,
+          Colors.redAccent,
+          LocalizationHelper.getActivityName(context, 'no_smoking'),
+        ),
+      );
     }
     if (act['social_media_detox'] == true) {
-      chips.add(makeChip(LineIcons.mobilePhone, Colors.blueGrey, 'Detoks'));
+      chips.add(
+        makeChip(
+          LineIcons.mobilePhone,
+          Colors.blueGrey,
+          LocalizationHelper.getActivityName(context, 'social_media_detox'),
+        ),
+      );
     }
     if (act['meditation'] == true) {
-      chips.add(makeChip(LineIcons.spa, Colors.purpleAccent, 'Meditasyon'));
+      chips.add(
+        makeChip(
+          LineIcons.spa,
+          Colors.purpleAccent,
+          LocalizationHelper.getActivityName(context, 'meditation'),
+        ),
+      );
     }
 
     if (chips.isEmpty) return const SizedBox.shrink();

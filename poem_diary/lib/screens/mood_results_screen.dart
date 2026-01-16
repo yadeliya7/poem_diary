@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/providers.dart';
-import '../core/language_provider.dart';
+import '../helpers/localization_helper.dart';
+
 import '../models/poem_model.dart';
 import '../widgets/premium_poem_card.dart';
+
+import 'package:poem_diary/l10n/app_localizations.dart';
 
 class MoodResultsScreen extends StatelessWidget {
   final MoodCategory mood;
@@ -16,7 +19,6 @@ class MoodResultsScreen extends StatelessWidget {
     // Access the full archive filtered by mood
     final poemProvider = Provider.of<PoemProvider>(context);
     final moodPoems = poemProvider.getPoemsByMood(mood.code);
-    final lang = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -31,7 +33,7 @@ class MoodResultsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          '${mood.emoji} ${lang.translate('mood_${mood.code}')}',
+          '${mood.emoji} ${LocalizationHelper.getMoodName(context, mood.code)}',
           style: GoogleFonts.nunito(
             color: Theme.of(context).textTheme.bodyLarge?.color,
             fontWeight: FontWeight.bold,
@@ -46,7 +48,7 @@ class MoodResultsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    lang.translate('msg_no_mood_poems'),
+                    AppLocalizations.of(context)!.msgNoMoodPoems,
                     style: GoogleFonts.nunito(fontSize: 18, color: Colors.grey),
                   ),
                 ],

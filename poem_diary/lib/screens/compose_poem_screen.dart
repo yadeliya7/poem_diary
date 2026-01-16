@@ -1,11 +1,12 @@
 import 'dart:io';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import '../core/providers.dart';
-import '../core/language_provider.dart';
+
 import '../models/poem_model.dart';
 
 class ComposePoemScreen extends StatefulWidget {
@@ -201,7 +202,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                 ),
               ),
               child: Text(
-                Provider.of<LanguageProvider>(context).translate('save'),
+                AppLocalizations.of(context)!.save,
                 style: GoogleFonts.nunito(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -237,9 +238,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                   ),
                   cursorColor: Colors.white,
                   decoration: InputDecoration(
-                    hintText: Provider.of<LanguageProvider>(
-                      context,
-                    ).translate('title_placeholder'),
+                    hintText: AppLocalizations.of(context)!.titlePlaceholder,
                     hintStyle: TextStyle(
                       fontFamily: fontName,
                       color: Colors.white.withValues(alpha: 0.6),
@@ -263,9 +262,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                   ),
                   cursorColor: Colors.white,
                   decoration: InputDecoration(
-                    hintText: Provider.of<LanguageProvider>(
-                      context,
-                    ).translate('poet_placeholder'),
+                    hintText: AppLocalizations.of(context)!.poetPlaceholder,
                     hintStyle: TextStyle(
                       fontFamily: fontName,
                       color: Colors.white.withValues(alpha: 0.6),
@@ -285,11 +282,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                     ElevatedButton.icon(
                       onPressed: _pickImage,
                       icon: const Icon(Icons.image, size: 18),
-                      label: Text(
-                        Provider.of<LanguageProvider>(
-                          context,
-                        ).translate('add_photo'),
-                      ),
+                      label: Text(AppLocalizations.of(context)!.addPhoto),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.2),
                         foregroundColor: Colors.white,
@@ -303,11 +296,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                     ElevatedButton.icon(
                       onPressed: _pickVideo,
                       icon: const Icon(Icons.videocam, size: 18),
-                      label: Text(
-                        Provider.of<LanguageProvider>(
-                          context,
-                        ).translate('add_video'),
-                      ),
+                      label: Text(AppLocalizations.of(context)!.addVideo),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.2),
                         foregroundColor: Colors.white,
@@ -387,9 +376,7 @@ class _ComposePoemScreenState extends State<ComposePoemScreen> {
                     ),
                     cursorColor: Colors.white,
                     decoration: InputDecoration(
-                      hintText: Provider.of<LanguageProvider>(
-                        context,
-                      ).translate('hint_poem_body'),
+                      hintText: AppLocalizations.of(context)!.hintPoemBody,
                       hintStyle: TextStyle(
                         fontFamily: fontName,
                         color: Colors.white.withOpacity(0.6),

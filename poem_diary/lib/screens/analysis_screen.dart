@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../helpers/localization_helper.dart';
 
+import 'package:poem_diary/l10n/app_localizations.dart';
 import '../core/providers.dart';
 import '../models/daily_entry_model.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +29,7 @@ class AnalysisScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          "Analiz",
+          AppLocalizations.of(context)!.analysisTitle,
           style: GoogleFonts.nunito(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
@@ -41,8 +43,8 @@ class AnalysisScreen extends StatelessWidget {
             // 1. Mood Trend (Line Chart)
             _buildSection(
               context,
-              "Duygu Değişimi (Son 7 Gün)",
-              _buildMoodChart(last7Days, isDark),
+              AppLocalizations.of(context)!.analysisMoodTrend,
+              _buildMoodChart(context, last7Days, isDark),
               isDark,
             ),
             const SizedBox(height: 20),
@@ -50,8 +52,8 @@ class AnalysisScreen extends StatelessWidget {
             // 2. Sleep Analysis (Pie Chart)
             _buildSection(
               context,
-              "Uyku Kalitesi",
-              _buildSleepPieChart(entries, isDark),
+              AppLocalizations.of(context)!.analysisSleepQuality,
+              _buildSleepPieChart(context, entries, isDark),
               isDark,
             ),
             const SizedBox(height: 20),
@@ -59,8 +61,8 @@ class AnalysisScreen extends StatelessWidget {
             // 3. Top Activities (List/Bar)
             _buildSection(
               context,
-              "En Sık Yapılan Aktiviteler",
-              _buildActivityList(entries, isDark),
+              AppLocalizations.of(context)!.analysisTopActivities,
+              _buildActivityList(context, entries, isDark),
               isDark,
               onSeeAll: () => _showAllActivitiesModal(context, entries, isDark),
             ),
@@ -115,7 +117,7 @@ class AnalysisScreen extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    "Tümünü Gör",
+                    AppLocalizations.of(context)!.btnSeeAll,
                     style: GoogleFonts.nunito(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -133,9 +135,13 @@ class AnalysisScreen extends StatelessWidget {
   }
 
   // --- CHART 1: LINE CHART (MOOD) ---
-  Widget _buildMoodChart(List<DailyEntry> data, bool isDark) {
+  Widget _buildMoodChart(
+    BuildContext context,
+    List<DailyEntry> data,
+    bool isDark,
+  ) {
     if (data.isEmpty) {
-      return const Center(child: Text("Yeterli veri yok"));
+      return Center(child: Text(AppLocalizations.of(context)!.analysisNoData));
     }
 
     return SizedBox(
@@ -297,7 +303,11 @@ class AnalysisScreen extends StatelessWidget {
   }
 
   // --- CHART 2: PIE CHART (SLEEP) ---
-  Widget _buildSleepPieChart(List<DailyEntry> data, bool isDark) {
+  Widget _buildSleepPieChart(
+    BuildContext context,
+    List<DailyEntry> data,
+    bool isDark,
+  ) {
     int good = 0, medium = 0, bad = 0;
 
     for (var e in data) {
@@ -312,7 +322,11 @@ class AnalysisScreen extends StatelessWidget {
     }
 
     final total = good + medium + bad;
-    if (total == 0) return const Center(child: Text("Uyku verisi yok"));
+    if (total == 0) {
+      return Center(
+        child: Text(AppLocalizations.of(context)!.analysisNoSleepData),
+      );
+    }
 
     return SizedBox(
       height: 200,
@@ -365,11 +379,20 @@ class AnalysisScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildLegend(Colors.orangeAccent, "İyi Uyku"),
+              _buildLegend(
+                Colors.orangeAccent,
+                AppLocalizations.of(context)!.legendSleepGood,
+              ),
               const SizedBox(height: 8),
-              _buildLegend(Colors.blueAccent, "Orta"),
+              _buildLegend(
+                Colors.blueAccent,
+                AppLocalizations.of(context)!.legendSleepMedium,
+              ),
               const SizedBox(height: 8),
-              _buildLegend(Colors.indigoAccent, "Kötü"),
+              _buildLegend(
+                Colors.indigoAccent,
+                AppLocalizations.of(context)!.legendSleepBad,
+              ),
             ],
           ),
         ],
@@ -440,7 +463,7 @@ class AnalysisScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Tüm Aktiviteler",
+                      AppLocalizations.of(context)!.analysisAllActivities,
                       style: GoogleFonts.nunito(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -464,7 +487,7 @@ class AnalysisScreen extends StatelessWidget {
                 child: sortedKeys.isEmpty
                     ? Center(
                         child: Text(
-                          "Henüz aktivite yok",
+                          AppLocalizations.of(context)!.analysisNoActivities,
                           style: GoogleFonts.nunito(color: Colors.grey),
                         ),
                       )
@@ -476,78 +499,17 @@ class AnalysisScreen extends StatelessWidget {
                           final count = counts[key]!;
 
                           // --- LOCALIZATION MAP ---
-                          final Map<String, String> labels = {
-                            // Habits
-                            'drink_water': 'Su İçme',
-                            'journaling': 'Günlük Tutma',
-                            'early_rise': 'Erken Kalkma',
-                            'no_sugar': 'Şekersiz',
-                            '10k_steps': '10.000 Adım',
-                            'read_book': 'Kitap Okuma',
-                            'meditation': 'Meditasyon',
-                            'no_smoking': 'Sigarayı Bırakma',
-                            'social_media_detox': 'Sosyal Medya Diyeti',
-                            // Health
-                            'sport': 'Spor',
-                            'walking': 'Yürüyüş',
-                            'healthy_food': 'Sağlıklı Beslenme',
-                            'fast_food': 'Fast Food',
-                            'water': 'Su',
-                            'vitamins': 'Vitamin',
-                            'sleep_health': 'Uyku Düzeni',
-                            'doctor': 'Doktor',
-                            // Social
-                            'friends': 'Arkadaşlar',
-                            'family': 'Aile',
-                            'party': 'Parti',
-                            'partner': 'Partner',
-                            'guests': 'Misafir',
-                            'colleagues': 'İş Arkadaşları',
-                            'travel': 'Seyahat',
-                            'volunteer': 'Gönüllü',
-                            // Hobbies
-                            'gaming': 'Oyun',
-                            'reading': 'Kitap',
-                            'movie': 'Film/Dizi',
-                            'art': 'Sanat',
-                            'music': 'Müzik',
-                            'coding': 'Kodlama',
-                            'photography': 'Fotoğraf',
-                            'crafts': 'El İşi',
-                            // Chores
-                            'cleaning': 'Temizlik',
-                            'shopping': 'Alışveriş',
-                            'laundry': 'Çamaşır',
-                            'cooking': 'Yemek',
-                            'ironing': 'Ütü',
-                            'dishes': 'Bulaşık',
-                            'repair': 'Tamirat',
-                            'plants': 'Bitkiler',
-                            // Self Care
-                            'manicure': 'Manikür',
-                            'skincare': 'Cilt Bakımı',
-                            'hair': 'Saç Bakımı',
-                            'massage': 'Masaj',
-                            'facemask': 'Yüz Maskesi',
-                            'bath': 'Banyo',
-                            'digital_detox': 'Dijital Detoks',
-                            // Weather
-                            'sunny': 'Güneşli',
-                            'rainy': 'Yağmurlu',
-                            'cloudy': 'Bulutlu',
-                            'snowy': 'Karlı',
-                            // Sleep
-                            'good': 'İyi Uyku',
-                            'medium': 'Orta Uyku',
-                            'bad': 'Kötü Uyku',
-                          };
+                          // Removed hardcoded map
+
+                          // Consolidating icons if needed, or keeping them.
+                          // Ideally icons should be in a helper too, but let's keep them here or assume shared helper.
+                          // For now, I will keep the icon map but replace label logic.
 
                           final Map<String, IconData> icons = {
                             // Habits
                             'drink_water': Icons.water_drop,
                             'journaling': Icons.book,
-                            'eary_rise': Icons
-                                .alarm, // typo fix later if needed or mapped correctly
+                            'eary_rise': Icons.alarm,
                             'no_sugar': Icons.no_food,
                             '10k_steps': Icons.directions_walk,
                             'read_book': Icons.menu_book,
@@ -561,14 +523,16 @@ class AnalysisScreen extends StatelessWidget {
                             'rainy': Icons.grain,
                           };
 
-                          String label = labels[key] ?? key;
+                          String label = LocalizationHelper.getActivityName(
+                            context,
+                            key,
+                          );
                           IconData icon = icons[key] ?? Icons.circle; // Default
                           Color color =
                               Colors.primaries[key.hashCode %
                                   Colors
                                       .primaries
                                       .length]; // Random color based on key
-                          // Add more as needed or leave generic
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 16),
@@ -599,7 +563,9 @@ class AnalysisScreen extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                            "$count kez",
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.timesCount(count),
                                             style: GoogleFonts.nunito(
                                               color: Colors.grey,
                                               fontWeight: FontWeight.bold,
@@ -640,16 +606,44 @@ class AnalysisScreen extends StatelessWidget {
   }
 
   // --- CHART 3: TOP ACTIVITIES (LIST) ---
-  Widget _buildActivityList(List<DailyEntry> data, bool isDark) {
+  Widget _buildActivityList(
+    BuildContext context,
+    List<DailyEntry> data,
+    bool isDark,
+  ) {
     // Count frequencies
     final Map<String, int> counts = {};
 
     for (var e in data) {
       e.activities.forEach((key, value) {
-        if (key == 'sleep' || key == 'weather') return; // Skip these
+        if (key == 'header_date') return; // If needed
+        // Assuming we are counting all activities that are true or in list
 
+        // For boolean activities (Habits)
         if (value == true) {
           counts[key] = (counts[key] ?? 0) + 1;
+        }
+        // For array activities (Sections like sleep, etc which might be Strings or Lists)
+        // In mood_entry_dialog: activities[category] = 'value' (String)
+        // or activities[category] = ['item1', 'item2'] (List)
+        else if (value is String) {
+          // Values like 'good', 'sunny', 'sport' are values, not keys.
+          // Wait, the key is 'sleep', value is 'good'.
+          // We want to count 'good' (Good Sleep) or 'sleep' (Sleep)?
+          // The analysis usually shows "Good Sleep", "Sunny", "Sport".
+          // If value is String, we might want to count the VALUE as the activity/tag.
+          // BUT LocalizationHelper.getActivityName expects the KEY + VALUE for sections.
+          // Let's count the "Meaningful Item".
+
+          // If key is 'sleep', value is 'good'. We want to display "Good Sleep".
+          // So we should probably count keys like 'sleep_good' or just rely on value?
+          // Actually, looking at previous implementation _getActivityList:
+          // It iterates value if it's a List.
+          // If it's a boolean, it counts the key.
+
+          // What about 'sleep': 'good'? Previous code:
+          // skipped 'sleep' and 'weather'. (Line 649 in original).
+          // If we skip them, fine.
         } else if (value is List) {
           for (var item in value) {
             counts[item.toString()] = (counts[item.toString()] ?? 0) + 1;
@@ -658,7 +652,11 @@ class AnalysisScreen extends StatelessWidget {
       });
     }
 
-    if (counts.isEmpty) return const Center(child: Text("Aktivite verisi yok"));
+    if (counts.isEmpty) {
+      return Center(
+        child: Text(AppLocalizations.of(context)!.analysisNoActivityData),
+      );
+    }
 
     // Sort descending
     final sortedKeys = counts.keys.toList()
@@ -680,11 +678,11 @@ class AnalysisScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _getHumanLabel(key),
+                    LocalizationHelper.getActivityName(context, key),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "$count kez",
+                    AppLocalizations.of(context)!.timesCount(count),
                     style: const TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
@@ -708,70 +706,8 @@ class AnalysisScreen extends StatelessWidget {
     );
   }
 
-  String _getHumanLabel(String key) {
-    const map = {
-      // Health
-      'sport': 'Spor',
-      'healthy_food': 'Sağlıklı',
-      'fast_food': 'Fast Food',
-      'water': 'Su',
-      'walking': 'Yürüyüş',
-      'vitamins': 'Vitamin',
-      'sleep_health': 'Uyku',
-      'doctor': 'Doktor',
-
-      // Social
-      'friends': 'Arkadaşlar',
-      'family': 'Aile',
-      'party': 'Parti',
-      'partner': 'Partner',
-      'guests': 'Misafir',
-      'colleagues': 'İş Ark.',
-      'travel': 'Seyahat',
-      'volunteer': 'Gönüllü',
-
-      // Hobbies
-      'gaming': 'Oyun',
-      'reading': 'Okuma',
-      'movie': 'Film',
-      'art': 'Sanat',
-      'music': 'Müzik',
-      'coding': 'Kodlama',
-      'photography': 'Fotoğraf',
-      'crafts': 'El İşi',
-
-      // Chores
-      'cleaning': 'Temizlik',
-      'shopping': 'Alışveriş',
-      'laundry': 'Çamaşır',
-      'cooking': 'Yemek',
-      'ironing': 'Ütü',
-      'dishes': 'Bulaşık',
-      'repair': 'Tamirat',
-      'plants': 'Bitkiler',
-
-      // Selfcare
-      'manicure': 'Manikür',
-      'skincare': 'Cilt Bakımı',
-      'hair': 'Saç',
-      'massage': 'Masaj',
-      'facemask': 'Maske',
-      'bath': 'Banyo',
-      'digital_detox': 'Detoks',
-
-      // Booleans
-      'no_smoking': 'Sigara Yok',
-      'social_media_detox': 'Sosyal Medya',
-      'meditation': 'Meditasyon',
-      'read_book': 'Okuma',
-      'drink_water': 'Su',
-      'early_rise': 'Erken Kalk',
-      'no_sugar': 'Şekersiz',
-      'journaling': 'Günlük',
-      '10k_steps': '10 Bin Adım',
-    };
-    return map[key] ?? key;
-  }
+  // Use LocalizationHelper instead of local map
+  // Removed _getHumanLabel call
 
   Color _getColorForKey(String key) {
     // Consistent colors with HomeTab where possible

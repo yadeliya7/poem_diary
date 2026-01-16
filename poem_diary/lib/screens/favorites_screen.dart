@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/providers.dart';
 import '../widgets/premium_poem_card.dart';
-import '../core/language_provider.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
@@ -29,7 +29,7 @@ class FavoritesScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          Provider.of<LanguageProvider>(context).translate('favorites'),
+          AppLocalizations.of(context)!.favorites,
           style: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -50,7 +50,7 @@ class FavoritesScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    'Henüz favori şiiriniz yok.',
+                    AppLocalizations.of(context)!.emptyFavTitle,
                     style: GoogleFonts.nunito(fontSize: 18, color: Colors.grey),
                   ),
                 ],

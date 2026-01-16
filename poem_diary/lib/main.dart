@@ -9,6 +9,9 @@ import 'screens/setup_profile_screen.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting();
@@ -33,8 +36,8 @@ class PoemDiaryApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MoodProvider()),
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
+      child: Consumer2<ThemeProvider, LanguageProvider>(
+        builder: (context, themeProvider, languageProvider, _) {
           return MaterialApp(
             title: 'Habitual',
             theme: AppTheme.lightTheme(),
@@ -42,6 +45,18 @@ class PoemDiaryApp extends StatelessWidget {
             themeMode: themeProvider.isDarkMode
                 ? ThemeMode.dark
                 : ThemeMode.light,
+
+            // Localization Setup
+            // Localization Setup
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [Locale('en'), Locale('tr')],
+            locale: languageProvider.currentLocale,
+
             home: isSetupDone
                 ? const MainScaffold()
                 : const SetupProfileScreen(),

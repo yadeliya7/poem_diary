@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:line_icons/line_icons.dart';
 import '../models/poem_model.dart';
 import '../core/providers.dart';
@@ -124,15 +126,13 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
     final picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
+    if (!mounted) return;
+    final loc = AppLocalizations.of(context)!;
     if (image != null) {
       if (selectedMedia.length >= 5) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('En fazla 5 fotoğraf ekleyebilirsiniz.'),
-            ),
-          );
-        }
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(loc.maxMediaWarning)));
         return;
       }
       setState(() {
@@ -145,6 +145,32 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
     setState(() {
       selectedMedia.removeAt(index);
     });
+  }
+
+  String _getMoodName(BuildContext context, String code) {
+    final loc = AppLocalizations.of(context)!;
+    switch (code) {
+      case 'happy':
+        return loc.moodHappy;
+      case 'sad':
+        return loc.moodSad;
+      case 'romantic':
+        return loc.moodRomantic;
+      case 'mystic':
+        return loc.moodMystic;
+      case 'tired':
+        return loc.moodTired;
+      case 'hopeful':
+        return loc.moodHopeful;
+      case 'peaceful':
+        return loc.moodPeaceful;
+      case 'nostalgic':
+        return loc.moodNostalgic;
+      case 'angry':
+        return loc.moodAngry;
+      default:
+        return code;
+    }
   }
 
   @override
@@ -173,32 +199,38 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                   children: [
                     // Mood Section
-                    _buildSectionTitle(context, 'Ruh Hali'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.moodTitle,
+                    ),
                     _buildMoodSelector(context, isDark),
 
                     const Divider(height: 32),
 
                     // Sleep (Single Select)
-                    _buildSectionTitle(context, 'Uyku'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionSleep,
+                    ),
                     Wrap(
                       spacing: 12,
                       children: [
                         _buildChoiceChip(
-                          'İyi',
+                          AppLocalizations.of(context)!.sleepGood,
                           LineIcons.sun,
                           'sleep',
                           'good',
                           activeColor: Colors.orangeAccent,
                         ),
                         _buildChoiceChip(
-                          'Orta',
+                          AppLocalizations.of(context)!.sleepMedium,
                           LineIcons.cloudWithMoon,
                           'sleep',
                           'medium',
                           activeColor: Colors.blueGrey,
                         ),
                         _buildChoiceChip(
-                          'Kötü',
+                          AppLocalizations.of(context)!.sleepBad,
                           LineIcons.moon,
                           'sleep',
                           'bad',
@@ -210,56 +242,59 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const SizedBox(height: 20),
 
                     // Health (Multi)
-                    _buildSectionTitle(context, 'Sağlık'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionHealth,
+                    ),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         _buildFilterChip(
-                          'Spor',
+                          AppLocalizations.of(context)!.healthSport,
                           LineIcons.running,
                           'health',
                           'sport',
                         ),
                         _buildFilterChip(
-                          'Sağlıklı',
+                          AppLocalizations.of(context)!.healthHealthyFood,
                           LineIcons.carrot,
                           'health',
                           'healthy_food',
                         ),
                         _buildFilterChip(
-                          'Fast Food',
+                          AppLocalizations.of(context)!.healthFastFood,
                           LineIcons.hamburger,
                           'health',
                           'fast_food',
                         ),
                         _buildFilterChip(
-                          'Su',
+                          AppLocalizations.of(context)!.healthWater,
                           LineIcons.tint,
                           'health',
                           'water',
                         ),
                         // New Items
                         _buildFilterChip(
-                          'Yürüyüş',
+                          AppLocalizations.of(context)!.healthWalking,
                           LineIcons.walking,
                           'health',
                           'walking',
                         ),
                         _buildFilterChip(
-                          'Vitamin',
+                          AppLocalizations.of(context)!.healthVitamins,
                           LineIcons.pills,
                           'health',
                           'vitamins',
                         ),
                         _buildFilterChip(
-                          'Uyku',
+                          AppLocalizations.of(context)!.healthSleep,
                           LineIcons.bed,
                           'health',
                           'sleep_health',
                         ),
                         _buildFilterChip(
-                          'Doktor',
+                          AppLocalizations.of(context)!.healthDoctor,
                           LineIcons.stethoscope,
                           'health',
                           'doctor',
@@ -270,56 +305,59 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const SizedBox(height: 20),
 
                     // Social (Multi)
-                    _buildSectionTitle(context, 'Sosyal'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionSocial,
+                    ),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         _buildFilterChip(
-                          'Arkadaşlar',
+                          AppLocalizations.of(context)!.socialFriends,
                           LineIcons.userFriends,
                           'social',
                           'friends',
                         ),
                         _buildFilterChip(
-                          'Aile',
+                          AppLocalizations.of(context)!.socialFamily,
                           LineIcons.home,
                           'social',
                           'family',
                         ),
                         _buildFilterChip(
-                          'Parti',
+                          AppLocalizations.of(context)!.socialParty,
                           LineIcons.cocktail,
                           'social',
                           'party',
                         ),
                         _buildFilterChip(
-                          'Partner',
+                          AppLocalizations.of(context)!.socialPartner,
                           LineIcons.heartAlt,
                           'social',
                           'partner',
                         ),
                         // New Items
                         _buildFilterChip(
-                          'Misafir',
+                          AppLocalizations.of(context)!.socialGuests,
                           Icons.people_outline,
                           'social',
                           'guests',
                         ),
                         _buildFilterChip(
-                          'İş Ark.',
+                          AppLocalizations.of(context)!.socialColleagues,
                           LineIcons.briefcase,
                           'social',
                           'colleagues',
                         ),
                         _buildFilterChip(
-                          'Seyahat',
+                          AppLocalizations.of(context)!.socialTravel,
                           LineIcons.plane,
                           'social',
                           'travel',
                         ),
                         _buildFilterChip(
-                          'Gönüllü',
+                          AppLocalizations.of(context)!.socialVolunteer,
                           LineIcons.heart,
                           'social',
                           'volunteer',
@@ -330,56 +368,59 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const SizedBox(height: 20),
 
                     // Hobbies (Multi)
-                    _buildSectionTitle(context, 'Hobiler'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionHobbies,
+                    ),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         _buildFilterChip(
-                          'Oyun',
+                          AppLocalizations.of(context)!.hobbyGaming,
                           LineIcons.gamepad,
                           'hobbies',
                           'gaming',
                         ),
                         _buildFilterChip(
-                          'Kitap',
+                          AppLocalizations.of(context)!.hobbyReading,
                           LineIcons.book,
                           'hobbies',
                           'reading',
                         ),
                         _buildFilterChip(
-                          'Film/Dizi',
+                          AppLocalizations.of(context)!.hobbyMovie,
                           LineIcons.video,
                           'hobbies',
                           'movie',
                         ),
                         _buildFilterChip(
-                          'Sanat',
+                          AppLocalizations.of(context)!.hobbyArt,
                           LineIcons.palette,
                           'hobbies',
                           'art',
                         ),
                         // New Items
                         _buildFilterChip(
-                          'Müzik',
+                          AppLocalizations.of(context)!.hobbyMusic,
                           LineIcons.music,
                           'hobbies',
                           'music',
                         ),
                         _buildFilterChip(
-                          'Kodlama',
+                          AppLocalizations.of(context)!.hobbyCoding,
                           LineIcons.code,
                           'hobbies',
                           'coding',
                         ),
                         _buildFilterChip(
-                          'Fotoğraf',
+                          AppLocalizations.of(context)!.hobbyPhotography,
                           LineIcons.camera,
                           'hobbies',
                           'photography',
                         ),
                         _buildFilterChip(
-                          'El İşi',
+                          AppLocalizations.of(context)!.hobbyCrafts,
                           LineIcons.brush,
                           'hobbies',
                           'crafts',
@@ -390,56 +431,59 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const SizedBox(height: 20),
 
                     // Chores (Multi)
-                    _buildSectionTitle(context, 'İşler'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionChores,
+                    ),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         _buildFilterChip(
-                          'Temizlik',
+                          AppLocalizations.of(context)!.choreCleaning,
                           LineIcons.broom,
                           'chores',
                           'cleaning',
                         ),
                         _buildFilterChip(
-                          'Alışveriş',
+                          AppLocalizations.of(context)!.choreShopping,
                           LineIcons.shoppingCart,
                           'chores',
                           'shopping',
                         ),
                         _buildFilterChip(
-                          'Çamaşır',
+                          AppLocalizations.of(context)!.choreLaundry,
                           LineIcons.tShirt,
                           'chores',
                           'laundry',
                         ),
                         _buildFilterChip(
-                          'Yemek',
+                          AppLocalizations.of(context)!.choreCooking,
                           LineIcons.utensils,
                           'chores',
                           'cooking',
                         ),
                         // New Items
                         _buildFilterChip(
-                          'Ütü',
+                          AppLocalizations.of(context)!.choreIroning,
                           Icons.iron,
                           'chores',
                           'ironing',
                         ),
                         _buildFilterChip(
-                          'Bulaşık',
+                          AppLocalizations.of(context)!.choreDishes,
                           Icons.kitchen,
                           'chores',
                           'dishes',
                         ),
                         _buildFilterChip(
-                          'Tamirat',
+                          AppLocalizations.of(context)!.choreRepair,
                           LineIcons.tools,
                           'chores',
                           'repair',
                         ),
                         _buildFilterChip(
-                          'Bitkiler',
+                          AppLocalizations.of(context)!.chorePlants,
                           LineIcons.leaf,
                           'chores',
                           'plants',
@@ -450,50 +494,53 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const SizedBox(height: 20),
 
                     // Self Care (Multi)
-                    _buildSectionTitle(context, 'Bakım'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionSelfCare,
+                    ),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         _buildFilterChip(
-                          'Manikür',
+                          AppLocalizations.of(context)!.careManicure,
                           LineIcons.handHoldingHeart,
                           'selfcare',
                           'manicure',
                         ),
                         _buildFilterChip(
-                          'Cilt Bakımı',
+                          AppLocalizations.of(context)!.careSkincare,
                           LineIcons.spa,
                           'selfcare',
                           'skincare',
                         ),
                         _buildFilterChip(
-                          'Saç',
+                          AppLocalizations.of(context)!.careHair,
                           LineIcons.cut,
                           'selfcare',
                           'hair',
                         ),
                         // New Items
                         _buildFilterChip(
-                          'Masaj',
+                          AppLocalizations.of(context)!.careMassage,
                           Icons.spa,
                           'selfcare',
                           'massage',
                         ),
                         _buildFilterChip(
-                          'Maske',
+                          AppLocalizations.of(context)!.careFaceMask,
                           Icons.face,
                           'selfcare',
                           'facemask',
                         ),
                         _buildFilterChip(
-                          'Banyo',
+                          AppLocalizations.of(context)!.careBath,
                           LineIcons.bath,
                           'selfcare',
                           'bath',
                         ),
                         _buildFilterChip(
-                          'Detoks',
+                          AppLocalizations.of(context)!.careDetox,
                           Icons.phonelink_off,
                           'selfcare',
                           'digital_detox',
@@ -504,31 +551,34 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const SizedBox(height: 20),
 
                     // Weather (Single usually, but Multi ok)
-                    _buildSectionTitle(context, 'Hava'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionWeather,
+                    ),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
                         _buildFilterChip(
-                          'Güneşli',
+                          AppLocalizations.of(context)!.weatherSunny,
                           LineIcons.sun,
                           'weather',
                           'sunny',
                         ),
                         _buildFilterChip(
-                          'Yağmurlu',
+                          AppLocalizations.of(context)!.weatherRainy,
                           LineIcons.cloudWithRain,
                           'weather',
                           'rainy',
                         ),
                         _buildFilterChip(
-                          'Bulutlu',
+                          AppLocalizations.of(context)!.weatherCloudy,
                           LineIcons.cloud,
                           'weather',
                           'cloudy',
                         ),
                         _buildFilterChip(
-                          'Karlı',
+                          AppLocalizations.of(context)!.weatherSnowy,
                           LineIcons.snowflake,
                           'weather',
                           'snowy',
@@ -541,33 +591,51 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     // HEADER: Daily Goals
                     _buildSectionTitle(
                       context,
-                      Provider.of<LanguageProvider>(
-                        context,
-                      ).translate('daily_goals'),
+                      AppLocalizations.of(context)!.dailyGoals,
                     ),
                     _buildHabitTile(
-                      'Sigarayı Bırak',
+                      AppLocalizations.of(context)!.goalNoSmoking,
                       LineIcons.smokingBan,
                       'no_smoking',
                     ),
                     _buildHabitTile(
-                      'Sosyal Medya Diyeti',
+                      AppLocalizations.of(context)!.goalSocialDetox,
                       LineIcons.mobilePhone,
                       'social_media_detox',
                     ),
-                    _buildHabitTile('Kitap Oku', LineIcons.book, 'read_book'),
-                    _buildHabitTile('Su İç', LineIcons.tint, 'drink_water'),
-                    _buildHabitTile('Meditasyon', LineIcons.spa, 'meditation'),
-                    // New Goal Items
-                    _buildHabitTile('Erken Kalk', LineIcons.bell, 'early_rise'),
-                    _buildHabitTile('Şekersiz', Icons.no_food, 'no_sugar'),
                     _buildHabitTile(
-                      'Günlük Tut',
+                      AppLocalizations.of(context)!.goalReadBook,
+                      LineIcons.book,
+                      'read_book',
+                    ),
+                    _buildHabitTile(
+                      AppLocalizations.of(context)!.goalDrinkWater,
+                      LineIcons.tint,
+                      'drink_water',
+                    ),
+                    _buildHabitTile(
+                      AppLocalizations.of(context)!.goalMeditation,
+                      LineIcons.spa,
+                      'meditation',
+                    ),
+                    // New Goal Items
+                    _buildHabitTile(
+                      AppLocalizations.of(context)!.goalEarlyRise,
+                      LineIcons.bell,
+                      'early_rise',
+                    ),
+                    _buildHabitTile(
+                      AppLocalizations.of(context)!.goalNoSugar,
+                      Icons.no_food,
+                      'no_sugar',
+                    ),
+                    _buildHabitTile(
+                      AppLocalizations.of(context)!.goalJournaling,
                       LineIcons.bookOpen,
                       'journaling',
                     ),
                     _buildHabitTile(
-                      '10 Bin Adım',
+                      AppLocalizations.of(context)!.goalSteps,
                       LineIcons.shoePrints,
                       '10k_steps',
                     ),
@@ -575,7 +643,10 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     const Divider(height: 32),
 
                     // Note & Media
-                    _buildSectionTitle(context, 'Notlar & Medya'),
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.sectionNotesMedia,
+                    ),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -593,7 +664,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                           color: isDark ? Colors.white : Colors.black87,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Bugüne dair notların...',
+                          hintText: AppLocalizations.of(context)!.notesHint,
                           hintStyle: TextStyle(
                             color: isDark ? Colors.white30 : Colors.black38,
                           ),
@@ -616,6 +687,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
   }
 
   Widget _buildHeader(BuildContext context, bool isDark) {
+    final loc = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
@@ -642,9 +714,9 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
           TextButton(
             onPressed: () {
               if (moodNotifier.value == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Lütfen bir ruh hali seçin')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(loc.selectMoodWarning)));
                 return;
               }
               widget.provider.saveDailyEntry(
@@ -656,14 +728,14 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
               );
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Günlük kaydedildi!'),
+                SnackBar(
+                  content: Text(loc.saveSuccess),
                   backgroundColor: Colors.green,
                 ),
               );
             },
             child: Text(
-              'KAYDET',
+              loc.save.toUpperCase(),
               style: GoogleFonts.nunito(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -724,7 +796,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                     border: Border.all(
                       color: isSelected
                           ? Colors.transparent
-                          : Colors.grey.withOpacity(0.3),
+                          : Colors.grey.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(
@@ -734,9 +806,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  Provider.of<LanguageProvider>(
-                    context,
-                  ).translate('mood_${mood.code}'),
+                  _getMoodName(context, mood.code),
                   style: GoogleFonts.nunito(
                     fontSize: 9,
                     fontWeight: isSelected
@@ -787,7 +857,9 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: isSelected ? Colors.transparent : Colors.grey.withOpacity(0.3),
+          color: isSelected
+              ? Colors.transparent
+              : Colors.grey.withValues(alpha: 0.3),
         ),
       ),
     );
@@ -827,7 +899,9 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: isSelected ? Colors.transparent : Colors.grey.withOpacity(0.3),
+          color: isSelected
+              ? Colors.transparent
+              : Colors.grey.withValues(alpha: 0.3),
         ),
       ),
     );
@@ -868,10 +942,10 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
       decoration: BoxDecoration(
         color: isDark ? Colors.black26 : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -885,7 +959,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isDone
-                    ? Colors.green.withOpacity(0.15)
+                    ? Colors.green.withValues(alpha: 0.15)
                     : (isDark ? Colors.white10 : Colors.grey[100]),
                 shape: BoxShape.circle,
               ),
@@ -912,7 +986,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                 const SizedBox(height: 4),
                 if (displayStreak > 0)
                   Text(
-                    '🔥 $displayStreak Günlük Seri',
+                    '🔥 ${AppLocalizations.of(context)!.dailyStreak(displayStreak)}',
                     style: GoogleFonts.nunito(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -921,7 +995,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                   )
                 else
                   Text(
-                    'Seriyi Başlat',
+                    AppLocalizations.of(context)!.startStreak,
                     style: GoogleFonts.nunito(fontSize: 12, color: Colors.grey),
                   ),
               ],
@@ -1019,7 +1093,7 @@ class _MoodEntrySheetState extends State<MoodEntrySheet> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Fotoğraf Ekle', // Localize later if needed
+                  AppLocalizations.of(context)!.btnAddPhoto,
                   style: GoogleFonts.nunito(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.bold,

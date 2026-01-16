@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ import '../core/theme.dart';
 import '../core/premium_effects.dart';
 import '../core/providers.dart';
 import '../core/language_provider.dart';
+
 import '../models/poem_model.dart';
 import '../core/gradient_palette.dart';
 import '../utils/content_utils.dart';
@@ -115,11 +117,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
             children: [
               ListTile(
                 leading: const Icon(Icons.text_fields),
-                title: Text(
-                  Provider.of<LanguageProvider>(
-                    context,
-                  ).translate('share_text'),
-                ),
+                title: Text(AppLocalizations.of(context)!.shareText),
                 onTap: () async {
                   Navigator.pop(ctx);
                   // ignore: deprecated_member_use
@@ -131,15 +129,9 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
               ),
               ListTile(
                 leading: const Icon(Icons.image),
-                title: Text(
-                  Provider.of<LanguageProvider>(
-                    context,
-                  ).translate('share_image'),
-                ),
+                title: Text(AppLocalizations.of(context)!.shareImage),
                 subtitle: Text(
-                  Provider.of<LanguageProvider>(
-                    context,
-                  ).translate('share_image_subtitle'),
+                  AppLocalizations.of(context)!.shareImageSubtitle,
                 ),
                 onTap: () async {
                   Navigator.pop(ctx);
@@ -223,9 +215,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              '${Provider.of<LanguageProvider>(context, listen: false).translate('share_error')} $e',
-            ),
+            content: Text('${AppLocalizations.of(context)!.shareError} $e'),
           ),
         );
       }
@@ -638,9 +628,7 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
 
                     // Başlık ve TabBar
                     Text(
-                      Provider.of<LanguageProvider>(
-                        context,
-                      ).translate('design_bg_title'),
+                      AppLocalizations.of(context)!.designBgTitle,
                       style: GoogleFonts.nunito(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -663,15 +651,11 @@ class _PremiumPoemCardState extends State<PremiumPoemCard>
                       dividerColor: Colors.transparent,
                       tabs: [
                         Tab(
-                          text: Provider.of<LanguageProvider>(
-                            context,
-                          ).translate('tab_gallery'),
+                          text: AppLocalizations.of(context)!.tabGallery,
                           icon: const Icon(Icons.image),
                         ),
                         Tab(
-                          text: Provider.of<LanguageProvider>(
-                            context,
-                          ).translate('tab_colors'),
+                          text: AppLocalizations.of(context)!.tabColors,
                           icon: const Icon(Icons.color_lens),
                         ),
                       ],

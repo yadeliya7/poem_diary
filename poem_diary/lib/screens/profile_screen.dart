@@ -11,6 +11,7 @@ import 'setup_profile_screen.dart';
 import 'about_screen.dart';
 
 import '../core/language_provider.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -89,7 +90,9 @@ class ProfileScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            moodProvider.userName,
+                            moodProvider.userName == "Misafir Kullanıcı"
+                                ? AppLocalizations.of(context)!.guestUser
+                                : moodProvider.userName,
                             style: GoogleFonts.nunito(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -105,7 +108,9 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        moodProvider.userTitle,
+                        moodProvider.userTitle == "Şiir Tutkunu"
+                            ? AppLocalizations.of(context)!.defaultUserTitle
+                            : moodProvider.userTitle,
                         style: GoogleFonts.nunito(
                           fontSize: 14,
                           color: Colors.grey,
@@ -157,7 +162,7 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Premium\'a Geç',
+                            AppLocalizations.of(context)!.goPremium,
                             style: GoogleFonts.nunito(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -166,7 +171,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Sınırsız erişim ve reklamsız deneyim.',
+                            AppLocalizations.of(context)!.premiumDesc,
                             style: GoogleFonts.nunito(
                               fontSize: 12,
                               color: Colors.white70,
@@ -187,7 +192,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 30),
               // --- GÖRÜNÜM (APPEARANCE) ---
               Text(
-                'GÖRÜNÜM',
+                AppLocalizations.of(context)!.sectionAppearance,
                 style: GoogleFonts.nunito(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -219,7 +224,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'Karanlık Mod',
+                    AppLocalizations.of(context)!.darkMode,
                     style: GoogleFonts.nunito(
                       fontWeight: FontWeight.bold,
                       color: isDark ? Colors.white : Colors.black87,
@@ -257,7 +262,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'Dil: ${languageProvider.currentLanguage == 'tr' ? 'Türkçe' : 'English'}',
+                    '${AppLocalizations.of(context)!.settingsLanguage}: ${languageProvider.currentLanguage == 'tr' ? 'Türkçe' : 'English'}',
                     style: GoogleFonts.nunito(
                       fontWeight: FontWeight.bold,
                       color: isDark ? Colors.white : Colors.black87,
@@ -300,7 +305,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   title: Text(
-                    'Yazı Tipi',
+                    AppLocalizations.of(context)!.settingFontTitle,
                     style: GoogleFonts.nunito(
                       fontWeight: FontWeight.bold,
                       color: isDark ? Colors.white : Colors.black87,
@@ -356,7 +361,7 @@ class ProfileScreen extends StatelessWidget {
 
               // --- AYARLAR (SETTINGS) ---
               Text(
-                'DİĞER',
+                AppLocalizations.of(context)!.sectionOther,
                 style: GoogleFonts.nunito(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -386,7 +391,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Hedef Takip Süresi',
+                          AppLocalizations.of(context)!.goalDuration,
                           style: GoogleFonts.nunito(
                             fontSize: 16,
                             color: isDark ? Colors.white : Colors.black87,
@@ -441,7 +446,9 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                                 child: Center(
                                   child: Text(
-                                    '$days Gün',
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.daysSuffix(days),
                                     style: GoogleFonts.nunito(
                                       fontSize: 12,
                                       fontWeight: isSelected
@@ -471,7 +478,7 @@ class ProfileScreen extends StatelessWidget {
               _buildSettingTile(
                 context,
                 icon: LineIcons.share,
-                title: 'Arkadaşlarınla Paylaş',
+                title: AppLocalizations.of(context)!.shareApp,
                 onTap: () => _shareApp(context),
                 isDark: isDark,
               ),
@@ -482,7 +489,7 @@ class ProfileScreen extends StatelessWidget {
               _buildSettingTile(
                 context,
                 icon: LineIcons.infoCircle,
-                title: 'Uygulama Hakkında',
+                title: AppLocalizations.of(context)!.about,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -543,10 +550,8 @@ class ProfileScreen extends StatelessWidget {
 
   void _shareApp(BuildContext context) {
     // Turkish marketing message
-    const String message =
-        "Selam! Duygu durumumu ve alışkanlıklarımı takip ettiğim bu harika uygulamayı keşfettim. "
-        "Sen de denemelisin! 🚀 Habitual\n\n"
-        ""; // Placeholder link
+    final String message = AppLocalizations.of(context)!.shareMessage;
+    //     + "https://example.com"; // Placeholder link
 
     // Share using share_plus
     try {
@@ -554,7 +559,7 @@ class ProfileScreen extends StatelessWidget {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Hata: $e. Lütfen uygulamayı yeniden başlatın.'),
+          content: Text(AppLocalizations.of(context)!.shareError(e.toString())),
         ),
       );
     }

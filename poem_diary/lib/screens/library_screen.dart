@@ -5,7 +5,10 @@ import 'package:provider/provider.dart';
 import '../core/providers.dart';
 
 import '../widgets/premium_poem_card.dart';
+
 import 'compose_poem_screen.dart';
+
+import 'package:poem_diary/l10n/app_localizations.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -112,7 +115,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
           leading: null,
           automaticallyImplyLeading: false,
           title: Text(
-            'Kitaplık',
+            AppLocalizations.of(context)!.libraryTitle,
             style: GoogleFonts.nunito(
               color: isDarkMode ? Colors.white : Colors.black,
               fontWeight: FontWeight.bold,
@@ -125,9 +128,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
             unselectedLabelColor: Colors.grey,
             indicatorColor: isDarkMode ? Colors.white : Colors.black,
             labelStyle: GoogleFonts.nunito(fontWeight: FontWeight.bold),
-            tabs: const [
-              Tab(icon: Icon(LineIcons.feather), text: 'İlham'),
-              Tab(icon: Icon(LineIcons.book), text: 'Defterim'),
+            tabs: [
+              Tab(
+                icon: const Icon(LineIcons.feather),
+                text: AppLocalizations.of(context)!.tabInspiration,
+              ),
+              Tab(
+                icon: const Icon(LineIcons.book),
+                text: AppLocalizations.of(context)!.tabNotebook,
+              ),
             ],
           ),
         ),
@@ -208,7 +217,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             onPressed: () => _loadCompletelyRandomPoem(),
             icon: const Icon(Icons.refresh),
             label: Text(
-              'Yeni Şiir Getir',
+              AppLocalizations.of(context)!.btnNewPoem,
               style: GoogleFonts.nunito(fontWeight: FontWeight.bold),
             ),
             style: TextButton.styleFrom(
@@ -260,7 +269,7 @@ class _UserPoemsTab extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Henüz bir şiir yazmadın...',
+                AppLocalizations.of(context)!.msgNoPoemYet,
                 style: GoogleFonts.nunito(
                   fontSize: 18,
                   color: Colors.grey,
@@ -269,7 +278,7 @@ class _UserPoemsTab extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Haydi, kalemi eline al!',
+                AppLocalizations.of(context)!.msgStartWriting,
                 style: GoogleFonts.nunito(fontSize: 14, color: Colors.grey),
               ),
             ],
@@ -353,14 +362,16 @@ class _UserPoemsTab extends StatelessWidget {
                                 ? const Color(0xFF2C2C2C)
                                 : Colors.white,
                             title: Text(
-                              'Şiiri Sil',
+                              AppLocalizations.of(context)!.titleDeletePoem,
                               style: GoogleFonts.nunito(
                                 fontWeight: FontWeight.bold,
                                 color: isDark ? Colors.white : Colors.black,
                               ),
                             ),
                             content: Text(
-                              'Bu şiiri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.',
+                              AppLocalizations.of(
+                                context,
+                              )!.msgDeleteConfirmation,
                               style: GoogleFonts.nunito(
                                 color: isDark ? Colors.white70 : Colors.black87,
                               ),
@@ -369,7 +380,7 @@ class _UserPoemsTab extends StatelessWidget {
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
                                 child: Text(
-                                  'İptal',
+                                  AppLocalizations.of(context)!.btnCancel,
                                   style: GoogleFonts.nunito(color: Colors.grey),
                                 ),
                               ),
@@ -379,7 +390,7 @@ class _UserPoemsTab extends StatelessWidget {
                                   Navigator.pop(context);
                                 },
                                 child: Text(
-                                  'Sil',
+                                  AppLocalizations.of(context)!.btnDelete,
                                   style: GoogleFonts.nunito(
                                     color: Colors.redAccent,
                                     fontWeight: FontWeight.bold,

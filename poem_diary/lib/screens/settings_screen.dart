@@ -5,6 +5,8 @@ import 'package:share_plus/share_plus.dart';
 import '../core/providers.dart';
 import '../core/language_provider.dart';
 
+import 'package:poem_diary/l10n/app_localizations.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -19,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          languageProvider.translate('settings'),
+          AppLocalizations.of(context)!.settings,
           style: GoogleFonts.nunito(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
@@ -30,7 +32,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           SwitchListTile(
             title: Text(
-              languageProvider.translate('dark_mode'),
+              AppLocalizations.of(context)!.darkMode,
               style: GoogleFonts.nunito(),
             ),
             value: themeProvider.isDarkMode,
@@ -41,18 +43,41 @@ class SettingsScreen extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              languageProvider.translate('language'),
+              AppLocalizations.of(context)!.settingsLanguage,
               style: GoogleFonts.nunito(),
             ),
-            trailing: Switch(
-              value: languageProvider.currentLanguage == 'en',
-              activeThumbColor: Colors.cyanAccent,
-              onChanged: (val) => languageProvider.toggleLanguage(),
+            trailing: DropdownButtonHideUnderline(
+              child: DropdownButton<Locale>(
+                value: languageProvider.currentLocale,
+                dropdownColor: isDark ? Colors.grey[850] : Colors.white,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontFamily: 'Nunito',
+                  fontSize: 16,
+                ),
+                icon: Icon(
+                  Icons.arrow_drop_down,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: Locale('tr'),
+                    child: Text('🇹🇷 Türkçe'),
+                  ),
+                  DropdownMenuItem(
+                    value: Locale('en'),
+                    child: Text('🇬🇧 English'),
+                  ),
+                ],
+                onChanged: (val) {
+                  if (val != null) languageProvider.setLocale(val);
+                },
+              ),
             ),
           ),
           ListTile(
             title: Text(
-              languageProvider.translate('setting_font_title'),
+              AppLocalizations.of(context)!.settingFontTitle,
               style: GoogleFonts.nunito(),
             ), // Font name usually stays same
             trailing: DropdownButtonHideUnderline(
@@ -100,7 +125,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.share, color: Colors.blueAccent),
             title: Text(
-              "Arkadaşlarınla Paylaş",
+              AppLocalizations.of(context)!.shareApp,
               style: GoogleFonts.nunito(fontWeight: FontWeight.w600),
             ),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -113,10 +138,8 @@ class SettingsScreen extends StatelessWidget {
 
   void _shareApp(BuildContext context) {
     // Turkish marketing message
-    const String message =
-        "Selam! Duygu durumumu ve alışkanlıklarımı takip ettiğim bu harika uygulamayı keşfettim. "
-        "Sen de denemelisin! 🚀 Habitual\n\n"
-        "https://example.com"; // Placeholder link
+    final String message = AppLocalizations.of(context)!.shareMessage;
+    //     + "https://example.com"; // Placeholder link
 
     // Share using share_plus
     try {
@@ -124,7 +147,7 @@ class SettingsScreen extends StatelessWidget {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Hata: $e. Lütfen uygulamayı yeniden başlatın.'),
+          content: Text(AppLocalizations.of(context)!.shareError(e.toString())),
         ),
       );
     }

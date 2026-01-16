@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../core/providers.dart';
@@ -11,6 +12,7 @@ import 'package:line_icons/line_icons.dart';
 
 import '../widgets/mood_entry_dialog.dart';
 import '../widgets/home_mood_selector.dart';
+import '../helpers/localization_helper.dart';
 import 'dart:io';
 
 class HomeTab extends StatefulWidget {
@@ -21,16 +23,17 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  String _getGreetingKey() {
+  String _getGreeting(BuildContext context) {
     final hour = DateTime.now().hour;
+    final loc = AppLocalizations.of(context)!;
     if (hour >= 6 && hour < 12) {
-      return 'good_morning';
+      return loc.goodMorning;
     } else if (hour >= 12 && hour < 18) {
-      return 'good_afternoon';
+      return loc.goodAfternoon;
     } else if (hour >= 18 && hour < 22) {
-      return 'good_evening';
+      return loc.goodEvening;
     } else {
-      return 'good_night';
+      return loc.goodNight;
     }
   }
 
@@ -100,7 +103,7 @@ class _HomeTabState extends State<HomeTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Bugün",
+                      AppLocalizations.of(context)!.today,
                       style: GoogleFonts.nunito(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -126,7 +129,7 @@ class _HomeTabState extends State<HomeTab> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  "Geçmiş Kayıtlar",
+                  AppLocalizations.of(context)!.pastRecords,
                   style: GoogleFonts.nunito(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -261,24 +264,7 @@ class _HomeTabState extends State<HomeTab> {
     // Actually, let's copy the config map briefly or move it to a getter.
     // Better: Just hardcoded lookup for the 9 habits we know.
 
-    String label = activityKey;
-    final habits = [
-      {'key': 'drink_water', 'label': 'Su İçme Alışkanlığı'},
-      {'key': 'journaling', 'label': 'Günlük Tutma'},
-      {'key': 'early_rise', 'label': 'Erken Kalkma'},
-      {'key': 'no_sugar', 'label': 'Şekersiz Beslenme'},
-      {'key': '10k_steps', 'label': '10.000 Adım'},
-      {'key': 'read_book', 'label': 'Kitap Okuma'},
-      {'key': 'meditation', 'label': 'Meditasyon'},
-      {'key': 'no_smoking', 'label': 'Sigarayı Bırakma'},
-      {'key': 'social_media_detox', 'label': 'Sosyal Medya Diyeti'},
-    ];
-
-    final found = habits.firstWhere(
-      (h) => h['key'] == activityKey,
-      orElse: () => {'label': activityKey},
-    );
-    label = found['label']!;
+    String label = LocalizationHelper.getActivityName(context, activityKey);
 
     showGeneralDialog(
       context: context,
@@ -334,16 +320,15 @@ class _HomeTabState extends State<HomeTab> {
                         ),
                         if (days <= 30) ...[
                           TextSpan(
-                            text: label,
+                            text: AppLocalizations.of(
+                              context,
+                            )!.streakCompleted(days, label),
                             style: const TextStyle(
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight
+                                  .bold, // Applying bold to the whole sentence
                               color: Colors.white,
                               fontSize: 18,
                             ),
-                          ),
-                          TextSpan(
-                            text: "\nhedefinde $days günlük seriyi tamamladın!",
-                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ] else ...[
                           TextSpan(text: "İnanılmaz! "),
@@ -438,22 +423,54 @@ class _HomeTabState extends State<HomeTab> {
     bool isDark,
   ) {
     // Defined Habit List
+    // Defined Habit List with Localized Labels
     final habits = [
-      {'key': 'drink_water', 'label': 'Su', 'icon': LineIcons.tint},
-      {'key': 'journaling', 'label': 'Günlük', 'icon': LineIcons.bookOpen},
-      {'key': 'early_rise', 'label': 'Erken Kalk', 'icon': LineIcons.bell},
-      {'key': 'no_sugar', 'label': 'Şekersiz', 'icon': Icons.no_food},
+      {
+        'key': 'drink_water',
+        'label': LocalizationHelper.getActivityName(context, 'drink_water'),
+        'icon': LineIcons.tint,
+      },
+      {
+        'key': 'journaling',
+        'label': LocalizationHelper.getActivityName(context, 'journaling'),
+        'icon': LineIcons.bookOpen,
+      },
+      {
+        'key': 'early_rise',
+        'label': LocalizationHelper.getActivityName(context, 'early_rise'),
+        'icon': LineIcons.bell,
+      },
+      {
+        'key': 'no_sugar',
+        'label': LocalizationHelper.getActivityName(context, 'no_sugar'),
+        'icon': Icons.no_food,
+      },
       {
         'key': '10k_steps',
-        'label': '10 Bin Adım',
+        'label': LocalizationHelper.getActivityName(context, '10k_steps'),
         'icon': LineIcons.shoePrints,
       },
-      {'key': 'read_book', 'label': 'Kitap', 'icon': LineIcons.book},
-      {'key': 'meditation', 'label': 'Meditasyon', 'icon': LineIcons.spa},
-      {'key': 'no_smoking', 'label': 'Sigarasız', 'icon': LineIcons.smokingBan},
+      {
+        'key': 'read_book',
+        'label': LocalizationHelper.getActivityName(context, 'read_book'),
+        'icon': LineIcons.book,
+      },
+      {
+        'key': 'meditation',
+        'label': LocalizationHelper.getActivityName(context, 'meditation'),
+        'icon': LineIcons.spa,
+      },
+      {
+        'key': 'no_smoking',
+        'label': LocalizationHelper.getActivityName(context, 'no_smoking'),
+        'icon': LineIcons.smokingBan,
+      },
       {
         'key': 'social_media_detox',
-        'label': 'S. Medya',
+        'label': LocalizationHelper.getActivityName(
+          context,
+          'social_media_detox',
+        ),
         'icon': LineIcons.mobilePhone,
       },
     ];
@@ -793,7 +810,7 @@ class _HomeTabState extends State<HomeTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "HABITUAL",
+              AppLocalizations.of(context)!.homeTitle,
               style: GoogleFonts.nunito(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -803,9 +820,7 @@ class _HomeTabState extends State<HomeTab> {
             ),
             const SizedBox(height: 4),
             Text(
-              Provider.of<LanguageProvider>(
-                context,
-              ).translate(_getGreetingKey()),
+              _getGreeting(context),
               style: GoogleFonts.nunito(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -815,7 +830,7 @@ class _HomeTabState extends State<HomeTab> {
             Text(
               DateFormat(
                 'd MMMM yyyy',
-                Provider.of<LanguageProvider>(context).currentLanguage,
+                Provider.of<LanguageProvider>(context).currentLocale.toString(),
               ).format(DateTime.now()),
               style: GoogleFonts.nunito(fontSize: 14, color: Colors.grey),
             ),
@@ -938,7 +953,7 @@ class _HomeTabState extends State<HomeTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      mood.name,
+                      LocalizationHelper.getMoodName(context, mood.code),
                       style: GoogleFonts.nunito(
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
@@ -1145,27 +1160,21 @@ class _HomeTabState extends State<HomeTab> {
 
     Widget makeChip(IconData icon, Color color, String label) {
       final isDark = Theme.of(context).brightness == Brightness.dark;
-      // Using user requested styling preferences while keeping some vibrancy
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          // Logic: Light Mode -> Grey 200 (User Request), Dark Mode -> White 10
           color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(20),
-          // Optional: Add subtle border if colored background is too plain, but grey 200 is fine
-          // Keeping border 0 for cleaner look or very subtle
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: color, size: 16), // Keep icon colored
+            Icon(icon, color: color, size: 16),
             const SizedBox(width: 6),
             Text(
               label,
               style: GoogleFonts.nunito(
-                color: isDark
-                    ? Colors.white70
-                    : Colors.black87, // Dark text as requested
+                color: isDark ? Colors.white70 : Colors.black87,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
@@ -1176,19 +1185,30 @@ class _HomeTabState extends State<HomeTab> {
     }
 
     entry.activities.forEach((key, value) {
+      // 1. String Value (e.g. sleep: 'good', weather: 'sunny')
       if (value is String && activityConfig.containsKey(value)) {
         final conf = activityConfig[value];
-        chips.add(makeChip(conf['i'], conf['c'], conf['l']));
-      } else if (value is List) {
+        // Use key (e.g. 'sleep') + value ('good') to get localized name
+        final label = LocalizationHelper.getActivityName(context, key, value);
+        chips.add(makeChip(conf['i'], conf['c'], label));
+      }
+      // 2. List Value (e.g. hobbies: ['gaming', 'reading'])
+      else if (value is List) {
         for (var item in value) {
           if (activityConfig.containsKey(item)) {
             final conf = activityConfig[item];
-            chips.add(makeChip(conf['i'], conf['c'], conf['l']));
+            // Use item (e.g. 'gaming') as key
+            final label = LocalizationHelper.getActivityName(context, item);
+            chips.add(makeChip(conf['i'], conf['c'], label));
           }
         }
-      } else if (value == true && activityConfig.containsKey(key)) {
+      }
+      // 3. Boolean Value (e.g. sport: true)
+      else if (value == true && activityConfig.containsKey(key)) {
         final conf = activityConfig[key];
-        chips.add(makeChip(conf['i'], conf['c'], conf['l']));
+        // Use key (e.g. 'sport')
+        final label = LocalizationHelper.getActivityName(context, key);
+        chips.add(makeChip(conf['i'], conf['c'], label));
       }
     });
 

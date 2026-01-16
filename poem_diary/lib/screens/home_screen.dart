@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,19 @@ import '../models/daily_entry_model.dart';
 import '../models/poem_model.dart'; // Needed for MoodCategory
 import '../widgets/mood_entry_dialog.dart';
 import '../core/language_provider.dart';
+import '../helpers/localization_helper.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  String _getGreeting(BuildContext context) {
+    final hour = DateTime.now().hour;
+    final loc = AppLocalizations.of(context)!;
+    if (hour < 6) return loc.greetingNight;
+    if (hour < 12) return loc.greetingMorning;
+    if (hour < 18) return loc.greetingDay;
+    return loc.greetingEvening;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +85,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              lang.translate('greeting'), // "Merhaba, [User]" or just "Merhaba"
+              _getGreeting(context),
               style: GoogleFonts.nunito(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -159,7 +170,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              mood.name,
+              LocalizationHelper.getMoodName(context, mood.code),
               style: GoogleFonts.nunito(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -167,7 +178,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             Text(
-              "Bugünün Özeti",
+              AppLocalizations.of(context)!.todaySummary,
               style: GoogleFonts.nunito(fontSize: 16, color: Colors.white70),
             ),
 
@@ -176,7 +187,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
 
             // Bottom: Icons Strip
-            _buildIconStrip(entry),
+            _buildIconStrip(context, entry),
           ],
         ),
       ),
@@ -184,7 +195,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Widget: Icon Strip (The missing piece)
-  Widget _buildIconStrip(DailyEntry entry) {
+  Widget _buildIconStrip(BuildContext context, DailyEntry entry) {
     List<Widget> icons = [];
 
     // Helper
@@ -213,55 +224,84 @@ class HomeScreen extends StatelessWidget {
 
     // Logic to add icons based on map...
     // Sleep
-    if (act['sleep'] == 'good') {
-      icons.add(makeIcon(LineIcons.sun, 'İyi Uyku'));
-    }
-    if (act['sleep'] == 'medium') {
-      icons.add(makeIcon(LineIcons.cloud, 'Orta Uyku'));
-    }
-    if (act['sleep'] == 'bad') {
-      icons.add(makeIcon(LineIcons.moon, 'Kötü Uyku'));
+    if (act['sleep'] != null) {
+      icons.add(
+        makeIcon(
+          LineIcons.moon,
+          LocalizationHelper.getActivityName(context, 'sleep', act['sleep']),
+        ),
+      );
     }
 
     // Weather
-    if (act['weather'] == 'sunny') {
-      icons.add(makeIcon(LineIcons.sun, 'Güneşli'));
-    }
-    if (act['weather'] == 'rainy') {
-      icons.add(makeIcon(LineIcons.cloudWithRain, 'Yağmurlu'));
-    }
-    if (act['weather'] == 'cloudy') {
-      icons.add(makeIcon(LineIcons.cloud, 'Bulutlu'));
-    }
-    if (act['weather'] == 'snowy') {
-      icons.add(makeIcon(LineIcons.snowflake, 'Karlı'));
+    if (act['weather'] != null) {
+      icons.add(
+        makeIcon(
+          LineIcons.cloudWithSun,
+          LocalizationHelper.getActivityName(
+            context,
+            'weather',
+            act['weather'],
+          ),
+        ),
+      );
     }
 
     // Habits
     if (act['no_smoking'] == true) {
-      icons.add(makeIcon(LineIcons.smokingBan, 'Sigara Yok'));
+      icons.add(
+        makeIcon(
+          LineIcons.smokingBan,
+          LocalizationHelper.getActivityName(context, 'no_smoking'),
+        ),
+      );
     }
     if (act['sport'] == true) {
-      icons.add(makeIcon(LineIcons.running, 'Spor'));
+      icons.add(
+        makeIcon(
+          LineIcons.running,
+          LocalizationHelper.getActivityName(context, 'sport'),
+        ),
+      );
     }
     if (act['drink_water'] == true || act['water'] == true) {
-      icons.add(makeIcon(LineIcons.tint, 'Su'));
+      icons.add(
+        makeIcon(
+          LineIcons.tint,
+          LocalizationHelper.getActivityName(context, 'water'),
+        ),
+      );
     }
     if (act['read_book'] == true || act['reading'] == true) {
-      icons.add(makeIcon(LineIcons.book, 'Kitap'));
+      icons.add(
+        makeIcon(
+          LineIcons.book,
+          LocalizationHelper.getActivityName(context, 'reading'),
+        ),
+      );
     }
     if (act['meditation'] == true) {
-      icons.add(makeIcon(LineIcons.spa, 'Meditasyon'));
+      icons.add(
+        makeIcon(
+          LineIcons.spa,
+          LocalizationHelper.getActivityName(context, 'meditation'),
+        ),
+      );
     }
     if (act['social_media_detox'] == true) {
-      icons.add(makeIcon(LineIcons.mobilePhone, 'Detoks'));
+      icons.add(
+        makeIcon(
+          LineIcons.mobilePhone,
+          LocalizationHelper.getActivityName(context, 'detox'),
+        ),
+      );
     }
 
     if (icons.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(12.0),
         child: Text(
-          "Henüz aktivite detayı yok",
+          AppLocalizations.of(context)!.noActivityDetails,
           style: GoogleFonts.nunito(
             color: Colors.white70,
             fontStyle: FontStyle.italic,
@@ -279,7 +319,6 @@ class HomeScreen extends StatelessWidget {
     DateTime now,
   ) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final lang = Provider.of<LanguageProvider>(context);
 
     return GestureDetector(
       onTap: () async {
@@ -303,7 +342,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              lang.translate('mood_title'), // "Bugün nasılsın?"
+              AppLocalizations.of(context)!.moodTitle,
               style: GoogleFonts.nunito(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -324,7 +363,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              "Günün özetini eklemek için dokun",
+              AppLocalizations.of(context)!.tapToAddEntry,
               style: GoogleFonts.nunito(fontSize: 14, color: Colors.grey),
             ),
           ],

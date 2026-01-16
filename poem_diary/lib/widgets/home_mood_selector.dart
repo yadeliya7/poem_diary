@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:poem_diary/l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/providers.dart';
 import '../models/daily_entry_model.dart';
 import '../models/poem_model.dart';
-import '../core/language_provider.dart';
+
 import 'mood_entry_dialog.dart';
 
 class HomeMoodSelector extends StatefulWidget {
@@ -35,6 +36,32 @@ class _HomeMoodSelectorState extends State<HomeMoodSelector> {
       if (widget.todayEntry != null) {
         _selectedMoodCode = widget.todayEntry!.moodCode;
       }
+    }
+  }
+
+  String _getMoodName(BuildContext context, String code) {
+    final loc = AppLocalizations.of(context)!;
+    switch (code) {
+      case 'happy':
+        return loc.moodHappy;
+      case 'sad':
+        return loc.moodSad;
+      case 'romantic':
+        return loc.moodRomantic;
+      case 'mystic':
+        return loc.moodMystic;
+      case 'tired':
+        return loc.moodTired;
+      case 'hopeful':
+        return loc.moodHopeful;
+      case 'peaceful':
+        return loc.moodPeaceful;
+      case 'nostalgic':
+        return loc.moodNostalgic;
+      case 'angry':
+        return loc.moodAngry;
+      default:
+        return code;
     }
   }
 
@@ -93,9 +120,7 @@ class _HomeMoodSelectorState extends State<HomeMoodSelector> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              Provider.of<LanguageProvider>(
-                context,
-              ).translate('check_in_prompt'),
+              AppLocalizations.of(context)!.checkInPrompt,
               style: GoogleFonts.nunito(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -170,9 +195,7 @@ class _HomeMoodSelectorState extends State<HomeMoodSelector> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          Provider.of<LanguageProvider>(
-                            context,
-                          ).translate('mood_${mood.code}'),
+                          _getMoodName(context, mood.code),
                           style: GoogleFonts.nunito(
                             fontSize: 10,
                             fontWeight: isSelected

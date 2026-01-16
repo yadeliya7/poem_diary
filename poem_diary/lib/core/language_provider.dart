@@ -1,214 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageProvider extends ChangeNotifier {
-  String _currentLanguage = 'tr'; // Default to Turkish
+  Locale _currentLocale = const Locale('tr'); // Default to Turkish
 
-  String get currentLanguage => _currentLanguage;
-
-  void toggleLanguage() {
-    _currentLanguage = _currentLanguage == 'tr' ? 'en' : 'tr';
-    notifyListeners();
+  LanguageProvider() {
+    _loadLocale();
   }
 
-  void setLanguage(String lang) {
-    if (_currentLanguage != lang) {
-      _currentLanguage = lang;
+  Locale get currentLocale => _currentLocale;
+
+  Future<void> _loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? languageCode = prefs.getString('language_code');
+    if (languageCode != null) {
+      _currentLocale = Locale(languageCode);
       notifyListeners();
     }
   }
 
-  // Dictionary
-  final Map<String, Map<String, String>> _localizedValues = {
-    'tr': {
-      'library': 'Kitaplığım',
-      'settings': 'Ayarlar',
-      'favorites': 'Favorilerim',
-      'my_poems': 'Yazdıklarım',
-      'poem_of_day': 'Günün Şiiri',
-      'mood_title': 'Bugün Nasıl Hissediyorsun?',
-      'save': 'KAYDET',
-      'poet_placeholder': 'Şair / Mahlas',
-      'title_placeholder': 'Başlık...',
-      'add_photo': 'Fotoğraf',
-      'add_video': 'Video',
-      'future_warning': 'Geleceği henüz yaşamadın!',
-      'write_poem': 'Şiir Yaz',
-      'search': 'Ara',
-      'theme': 'Tema',
-      'dark_mode': 'Karanlık Mod',
-      'language': 'English / Turkish',
-      'home': 'Akış',
-      'discover': 'Keşfet',
-      'calendar': 'Takvim',
-      'check_in_prompt': 'Bugün nasılsın?',
-      'greeting_morning': 'Günaydın ☀️',
-      'greeting_day': 'İyi Günler 🌤️',
-      'greeting_evening': 'İyi Akşamlar 🌙',
-      'greeting_night': 'İyi Geceler 🌙',
-      'daily_quote': 'Bugün şiir gibi bir gün olsun.',
-      'discover_title': 'Ruh Haline Göre Keşfet',
-      'discover_subtitle': 'Modunu seç, şiirini bul...',
-      'empty_feed': 'Henüz hiç şiir yok...',
-      'empty_feed_subtitle':
-          'Sağ üstteki (+) ikonuna basarak\nilk şiirini ekle.',
-      'menu': 'Menü',
-      'change_theme': 'Temayı Değiştir',
-      'font_style': 'Yazı Tipi',
-      'about': 'Hakkında',
-      'calendar_title': 'Ruh Takvimi',
-      // Deep Clean Additions
-      'tab_home': 'Akış',
-      'tab_library': 'Kitaplık',
-      'tab_calendar': 'Takvim',
-      'empty_poems_title': 'Henüz bir şiir yazmadın',
-      'empty_poems_sub': 'İçindekileri dök...',
-      'empty_fav_title': 'Henüz favori şiirin yok',
-      'empty_fav_sub': 'Beğendiğin şiirleri buraya ekleyebilirsin',
-      'dialog_delete_title': 'Sil?',
-      'dialog_delete_msg': 'Bu öğeyi silmek istediğine emin misin?',
-      'btn_yes': 'Evet',
-      'btn_no': 'Hayır',
-      'btn_cancel': 'İptal',
-      'msg_saved': 'Başarıyla kaydedildi',
-      'msg_error': 'Bir hata oluştu',
-      'msg_field_required': 'Lütfen tüm alanları doldurun',
-      'msg_future_date': 'Geleceği henüz yaşamadın!',
-      'mood_happy': 'Neşe',
-      'mood_sad': 'Hüzün',
-      'mood_romantic': 'Romantik',
-      'mood_angry': 'Sinirli',
-      'mood_tired': 'Yorgun',
-      'mood_hopeful': 'Umut',
-      'mood_peaceful': 'Huzur',
-      'mood_nostalgic': 'Nostaljik',
-      'hint_search': 'Şiir veya şair ara...',
-      'hint_note': 'Bugüne bir not düş...',
-      'good_morning': 'Günaydın',
-      'good_afternoon': 'İyi Günler',
-      'good_evening': 'İyi Akşamlar',
-      'good_night': 'İyi Geceler',
-      'dialog_entry_title': 'Günün Kaydı',
-      'label_mood': 'Mod',
-      'hint_write_note': 'Günün notunu yaz...',
-      'label_attached_files': 'Eklenen Dosyalar',
-      'btn_save': 'Kaydet',
-      'msg_entry_saved': 'Günlük kaydedildi',
-      'share_text': 'Metni Paylaş',
-      'share_image': 'Resim Olarak Paylaş',
-      'share_image_subtitle': 'Uzun şiirler için otomatik uzayan tasarım',
-      'design_bg_title': 'Arka Plan Seç',
-      'tab_gallery': 'Galeri',
-      'tab_colors': 'Renkler',
-      'setting_font_title': 'Yazı Tipi',
-      'hint_poem_body': 'İçindekileri dök...',
-      'mood_unknown': 'Bilinmiyor',
-      'no_note': 'Bugün için eklenen bir not yok.',
-      'title_select_mood': 'Modunu Seç',
-      'btn_see_poems': 'Şiirleri Gör',
-      'msg_no_mood_poems': 'Bu ruh halinde henüz şiir yok.',
-      'share_error': 'Paylaşım oluşturulurken hata:',
-      'app_title': 'Şiir Günlüğü',
-      'msg_no_poem_selected': 'Henüz bir şiir seçilmedi.',
-      'created_with': 'ile oluşturuldu',
-      'daily_goals': 'Günlük Hedefler',
-    },
-    'en': {
-      'library': 'My Library',
-      'settings': 'Settings',
-      'favorites': 'Favorites',
-      'my_poems': 'My Poems',
-      'poem_of_day': 'Poem of the Day',
-      'mood_title': 'How do you feel today?',
-      'save': 'SAVE',
-      'poet_placeholder': 'Poet / Pseudonym',
-      'title_placeholder': 'Poem Title...',
-      'add_photo': 'Add Photo',
-      'add_video': 'Add Video',
-      'future_warning': 'You haven\'t lived the future yet!',
-      'write_poem': 'Write Poem',
-      'search': 'Search',
-      'theme': 'Theme',
-      'dark_mode': 'Dark Mode',
-      'language': 'English / Turkish',
-      'home': 'Home',
-      'discover': 'Discover',
-      'calendar': 'Calendar',
-      'check_in_prompt': 'How are you today?',
-      'greeting_morning': 'Good Morning ☀️',
-      'greeting_day': 'Good Day 🌤️',
-      'greeting_evening': 'Good Evening 🌙',
-      'greeting_night': 'Good Night 🌙',
-      'daily_quote': 'May today be poetic.',
-      'discover_title': 'Discover by Mood',
-      'discover_subtitle': 'Pick your mood, find your poem...',
-      'empty_feed': 'No poems yet...',
-      'empty_feed_subtitle': 'Tap (+) above to add your first poem.',
-      'menu': 'Menu',
-      'change_theme': 'Change Theme',
-      'font_style': 'Font Style',
-      'about': 'About',
-      'calendar_title': 'Mood Calendar',
-      'tab_home': 'Home',
-      'tab_library': 'Library',
-      'tab_calendar': 'Calendar',
-      'empty_poems_title': 'You haven\'t written a poem yet',
-      'empty_poems_sub': 'Pour your heart out...',
-      'empty_fav_title': 'No favorite poems yet',
-      'empty_fav_sub': 'You can add poems you like here',
-      'dialog_delete_title': 'Delete?',
-      'dialog_delete_msg': 'Are you sure you want to delete this?',
-      'btn_yes': 'Yes',
-      'btn_no': 'No',
-      'btn_cancel': 'Cancel',
-      'msg_saved': 'Saved successfully',
-      'msg_error': 'An error occurred',
-      'msg_field_required': 'Please fill all fields',
-      'msg_future_date': 'You haven\'t lived the future yet!',
-      'mood_happy': 'Joy',
-      'mood_sad': 'Sadness',
-      'mood_romantic': 'Romantic',
-      'mood_angry': 'Angry',
-      'mood_tired': 'Tired',
-      'mood_hopeful': 'Hopeful',
-      'mood_peaceful': 'Peaceful',
-      'mood_nostalgic': 'Nostalgic',
-      'hint_search': 'Search poems or poets...',
-      'hint_note': 'Add a note for today...',
-      'good_morning': 'Good Morning',
-      'good_afternoon': 'Good Afternoon',
-      'good_evening': 'Good Evening',
-      'good_night': 'Good Night',
-      'dialog_entry_title': 'Daily Entry',
-      'label_mood': 'Mood',
-      'hint_write_note': 'Write a note for today...',
-      'label_attached_files': 'Attached Files',
-      'btn_save': 'Save',
-      'msg_entry_saved': 'Diary entry saved',
-      'share_text': 'Share Text',
-      'share_image': 'Share as Image',
-      'share_image_subtitle': 'Auto-expanding design for long poems',
-      'design_bg_title': 'Select Background',
-      'tab_gallery': 'Gallery',
-      'tab_colors': 'Colors',
-      'setting_font_title': 'Font Style',
-      'hint_poem_body': 'Pour your heart out...',
-      'mood_unknown': 'Unknown',
-      'no_note': 'No note added for today.',
-      'title_select_mood': 'Select Mood',
-      'btn_see_poems': 'See Poems',
-      'msg_no_mood_poems': 'No poems for this mood yet.',
-      'share_error': 'Error creating share:',
-      'app_title': 'Habitual',
-      'msg_no_poem_selected': 'No poem selected yet.',
-      'created_with': 'Created with',
-      'daily_goals': 'Daily Goals',
-    },
-  };
+  void toggleLanguage() async {
+    final newLocale = _currentLocale.languageCode == 'tr'
+        ? const Locale('en')
+        : const Locale('tr');
 
-  String translate(String key) {
-    if (_localizedValues.containsKey(_currentLanguage)) {
-      return _localizedValues[_currentLanguage]![key] ?? key;
-    }
-    return key;
+    setLocale(newLocale);
   }
+
+  void setLocale(Locale locale) async {
+    if (_currentLocale != locale) {
+      _currentLocale = locale;
+      notifyListeners();
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('language_code', locale.languageCode);
+    }
+  }
+
+  // Legacy support for string-based checks (optional, helps transition)
+  String get currentLanguage => _currentLocale.languageCode;
 }
